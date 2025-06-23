@@ -1,7 +1,27 @@
 {
-  "name": "delivery-cost-calculator",
-  "private": true,
-  "version": "0.0.0",
+  "name": "bebeclick-delivery-calculator",
+  "private": false,
+  "version": "1.0.0",
+  "description": "Professional delivery cost calculator for BebeClick - React application supporting multiple delivery services",
+  "homepage": "https://calc-bebeclick.surge.sh",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bebeclick-dev/bebeclick-delivery-calculator.git"
+  },
+  "keywords": [
+    "react",
+    "vite",
+    "delivery",
+    "calculator",
+    "algeria",
+    "google-sheets",
+    "whatsapp",
+    "bebeclick",
+    "logistics",
+    "cost-calculator"
+  ],
+  "author": "BebeClick Development Team <bebeclick.dev@gmail.com>",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
