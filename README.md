@@ -61,10 +61,10 @@ Application web professionnelle pour calculer les coûts de livraison pour BebeC
 
 ### Étapes d'installation
 
-1. **Extraire l'archive**
+1. **Cloner le repository**
    ```bash
-   tar -xzf delivery-cost-calculator.tar.gz
-   cd delivery-cost-calculator
+   git clone https://github.com/Abdennour-ndr/bebeclick-delivery-calculator.git
+   cd bebeclick-delivery-calculator
    ```
 
 2. **Installer les dépendances**
