@@ -594,8 +594,8 @@ function DeliveryForm() {
                   ratePerKg = 100; // Zones 4 et 5
                 }
 
-                overweightFee = Math.ceil(extraWeight) * ratePerKg;
-                console.log(`⚖️ Surpoids: ${extraWeight}kg × ${ratePerKg}DA = ${overweightFee}DA (Zone ${zone})`);
+                overweightFee = Math.floor(extraWeight) * ratePerKg;
+                console.log(`⚖️ Surpoids: ${Math.floor(extraWeight)}kg × ${ratePerKg}DA = ${overweightFee}DA (Zone ${zone})`);
               }
 
               // Ajouter frais de remboursement (1% de la valeur déclarée)
