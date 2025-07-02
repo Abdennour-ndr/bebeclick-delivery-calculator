@@ -73,7 +73,7 @@ function AddressInput({ value, onChange, onPlaceSelect, placeholder, disabled = 
   };
 
   return (
-    <div className="address-input-container">
+    <div className="address-input-container" style={{ fontSize: '18px' }}>
       <input
         ref={inputRef}
         type="text"
@@ -82,12 +82,23 @@ function AddressInput({ value, onChange, onPlaceSelect, placeholder, disabled = 
         onFocus={handleInputFocus}
         placeholder={placeholder}
         disabled={disabled}
-        className="form-control"
+        className="modern-input"
         autoComplete="off"
+        style={{
+          width: '100%',
+          padding: '1rem',
+          border: '2px solid rgba(226, 232, 240, 0.6)',
+          borderRadius: '12px',
+          fontSize: '17px',
+          background: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(10px)',
+          transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1)',
+          color: '#1f2937'
+        }}
       />
       
       {loading && (
-        <div className="address-loading">
+        <div className="address-loading" style={{ fontSize: '16px' }}>
           Recherche en cours...
         </div>
       )}
@@ -100,8 +111,8 @@ function AddressInput({ value, onChange, onPlaceSelect, placeholder, disabled = 
               className="address-suggestion"
               onClick={() => handleSuggestionClick(suggestion)}
             >
-              <div className="suggestion-main">{suggestion.mainText}</div>
-              <div className="suggestion-secondary">{suggestion.secondaryText}</div>
+              <div className="suggestion-main" style={{ fontSize: '17px' }}>{suggestion.mainText}</div>
+              <div className="suggestion-secondary" style={{ fontSize: '15px' }}>{suggestion.secondaryText}</div>
             </div>
           ))}
         </div>

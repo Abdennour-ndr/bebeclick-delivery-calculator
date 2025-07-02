@@ -3,7 +3,7 @@ class ProductService {
   constructor() {
     // Configuration Google Sheets
     this.SHEET_ID = '1upqT76F2lCYRtoensQAUPQHlQwxLn5xWvAeryWQ7DvU';
-    this.API_KEY = 'AIzaSyASWDtFcs32CmVyjLJxkoTpyy2KBxa-gM4';
+    this.API_KEY = 'AIzaSyCAx9J4hejd-vmM4xVoIqw_qNdC3AezZ90';
     
     // Base de donnees temporaire des produits
     this.mockProducts = [

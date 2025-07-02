@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Connexion POS API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test de Connexion POS API</h1>
+        <p>Cet outil teste la connexion à l'API POS BebeClick</p>
+
+        <div class="test-section">
+            <h3>1. Test de Connexion Direct</h3>
+            <button onclick="testDirectConnection()">Tester Connexion Directe</button>
+            <div id="direct-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Test via Proxy (Développement)</h3>
+            <button onclick="testProxyConnection()">Tester via Proxy</button>
+            <div id="proxy-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Test avec CORS Headers</h3>
+            <button onclick="testCorsConnection()">Tester avec CORS</button>
+            <div id="cors-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. Informations de Débogage</h3>
+            <button onclick="showDebugInfo()">Afficher Info Debug</button>
+            <div id="debug-info"></div>
+        </div>
+    </div>
+
+    <script>
+        const POS_API_BASE = 'http://bebeclick-pos.estoriom.com/connector/api';
+        const ACCESS_TOKEN = '50HGKHNn2pkYDGBnlbLn4S0sdbYxO1G1Pu1YzUY9';
+        const PROXY_BASE = '/api/pos';
+
+        function showStatus(elementId, type, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function showResult(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+
+        async function testDirectConnection() {
+            showStatus('direct-result', 'info', '🔄 Test de connexion directe en cours...');
+            
+            try {
+                const response = await fetch(`${POS_API_BASE}/product?per_page=1`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    mode: 'cors'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showStatus('direct-result', 'success', '✅ Connexion directe réussie!');
+                    showResult('direct-result', { status: response.status, data: data });
+                } else {
+                    showStatus('direct-result', 'error', `❌ Erreur HTTP: ${response.status} ${response.statusText}`);
+                    const errorText = await response.text();
+                    showResult('direct-result', { status: response.status, error: errorText });
+                }
+            } catch (error) {
+                showStatus('direct-result', 'error', `❌ Erreur de connexion: ${error.message}`);
+                showResult('direct-result', { error: error.toString() });
+            }
+        }
+
+        async function testProxyConnection() {
+            showStatus('proxy-result', 'info', '🔄 Test via proxy en cours...');
+            
+            try {
+                const response = await fetch(`${PROXY_BASE}/product?per_page=1`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showStatus('proxy-result', 'success', '✅ Connexion via proxy réussie!');
+                    showResult('proxy-result', { status: response.status, data: data });
+                } else {
+                    showStatus('proxy-result', 'error', `❌ Erreur HTTP: ${response.status} ${response.statusText}`);
+                    const errorText = await response.text();
+                    showResult('proxy-result', { status: response.status, error: errorText });
+                }
+            } catch (error) {
+                showStatus('proxy-result', 'error', `❌ Erreur de connexion: ${error.message}`);
+                showResult('proxy-result', { error: error.toString() });
+            }
+        }
+
+        async function testCorsConnection() {
+            showStatus('cors-result', 'info', '🔄 Test avec headers CORS en cours...');
+            
+            try {
+                const response = await fetch(`${POS_API_BASE}/product?per_page=1`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+                    },
+                    mode: 'cors',
+                    credentials: 'omit'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showStatus('cors-result', 'success', '✅ Connexion avec CORS réussie!');
+                    showResult('cors-result', { status: response.status, data: data });
+                } else {
+                    showStatus('cors-result', 'error', `❌ Erreur HTTP: ${response.status} ${response.statusText}`);
+                    const errorText = await response.text();
+                    showResult('cors-result', { status: response.status, error: errorText });
+                }
+            } catch (error) {
+                showStatus('cors-result', 'error', `❌ Erreur de connexion: ${error.message}`);
+                showResult('cors-result', { error: error.toString() });
+            }
+        }
+
+        function showDebugInfo() {
+            const debugInfo = {
+                userAgent: navigator.userAgent,
+                currentURL: window.location.href,
+                protocol: window.location.protocol,
+                host: window.location.host,
+                timestamp: new Date().toISOString(),
+                posApiBase: POS_API_BASE,
+                proxyBase: PROXY_BASE,
+                hasToken: !!ACCESS_TOKEN,
+                tokenLength: ACCESS_TOKEN ? ACCESS_TOKEN.length : 0,
+                corsSupport: 'fetch' in window,
+                localStorageSupport: 'localStorage' in window,
+                cookiesEnabled: navigator.cookieEnabled
+            };
+
+            showStatus('debug-info', 'info', '📊 Informations de débogage:');
+            showResult('debug-info', debugInfo);
+        }
+
+        // Test automatique au chargement
+        window.onload = function() {
+            showDebugInfo();
+        };
+    </script>
+</body>
+</html>

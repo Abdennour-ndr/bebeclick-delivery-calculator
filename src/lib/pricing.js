@@ -31,12 +31,15 @@ export const YALIDINE_RATES = {
     // Autres wilayas à ajouter...
     'default': { baseCost: 600, deliveryToOffice: true }
   },
-  volumetricWeightFormula: 0.0002, // (L x l x h) en cm x 0.0002
+  volumetricWeightFormula: 1/5000, // (L x l x h) en cm ÷ 5000
   extraCostThreshold: {
-    weight: 2, // kg
-    volumetricWeight: 2 // kg
+    weight: 5, // kg
+    volumetricWeight: 5 // kg
   },
-  extraCostPerKg: 50 // DZD par kg supplémentaire
+  extraCostPerKg: {
+    zones_0_1_2_3: 50, // DZD par kg supplémentaire pour zones 0, 1, 2, 3
+    zones_4_5: 100     // DZD par kg supplémentaire pour zones 4, 5
+  }
 };
 
 // Fonction pour calculer le coût Zaki
@@ -77,7 +80,7 @@ export function calculateJamalDeliveryCost(distance) {
 import { cleanCost, cleanWeight, multiplyClean, sumCosts, formatNumber, smartRoundCost } from './mathUtils.js';
 
 // Fonction pour calculer le coût Yalidine
-export function calculateYalidineCost(wilaya, weight, dimensions) {
+export function calculateYalidineCost(wilaya, weight, dimensions, zone = 3) {
   const rates = YALIDINE_RATES.wilayas[wilaya] || YALIDINE_RATES.wilayas.default;
   let totalCost = rates.baseCost;
   let extraCost = 0;
@@ -93,10 +96,16 @@ export function calculateYalidineCost(wilaya, weight, dimensions) {
   // Déterminer le poids à utiliser pour le calcul (le plus élevé entre poids réel et volumétrique)
   const effectiveWeight = Math.max(cleanWeight(weight || 0), volumetricWeight);
 
-  // Calculer les coûts supplémentaires
+  // Calculer les coûts supplémentaires selon la zone
   if (effectiveWeight > YALIDINE_RATES.extraCostThreshold.weight) {
     const extraWeight = cleanWeight(effectiveWeight - YALIDINE_RATES.extraCostThreshold.weight);
-    const rawExtraCost = extraWeight * YALIDINE_RATES.extraCostPerKg;
+
+    // Déterminer le tarif selon la zone
+    const ratePerKg = (zone === 4 || zone === 5) ?
+      YALIDINE_RATES.extraCostPerKg.zones_4_5 :
+      YALIDINE_RATES.extraCostPerKg.zones_0_1_2_3;
+
+    const rawExtraCost = extraWeight * ratePerKg;
     const cleanedExtraCost = cleanCost(rawExtraCost);
     extraCost = smartRoundCost(cleanedExtraCost); // Appliquer le taux d'ajustement intelligent
     totalCost = sumCosts(totalCost, extraCost);
@@ -105,6 +114,8 @@ export function calculateYalidineCost(wilaya, weight, dimensions) {
     console.log('=== DEBUG YALIDINE CALCULATION (SMART ROUNDED) ===');
     console.log('Effective weight:', effectiveWeight);
     console.log('Extra weight:', extraWeight);
+    console.log('Zone:', zone);
+    console.log('Rate per kg:', ratePerKg);
     console.log('Raw extra cost:', rawExtraCost);
     console.log('Cleaned extra cost:', cleanedExtraCost);
     console.log('Smart rounded extra cost:', extraCost);

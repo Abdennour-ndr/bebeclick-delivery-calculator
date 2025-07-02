@@ -1,0 +1,23 @@
+{
+  "name": "bebeclick-delivery-calculator",
+  "version": "1.0.0",
+  "description": "Professional delivery cost calculator for BebeClick - React application supporting multiple delivery services - AWS Production",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "start:production": "NODE_ENV=production node server.js"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "delivery",
+    "calculator",
+    "aws",
+    "production"
+  ],
+  "author": "BebeClick Development Team <bebeclick.dev@gmail.com>",
+  "license": "MIT"
+}

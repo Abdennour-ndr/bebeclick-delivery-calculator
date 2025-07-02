@@ -1,0 +1,21 @@
+﻿BebeClick AWS Deployment Complete!
+==================================
+Instance ID: 
+Public IP: 
+SSH Key: bebeclick-07010344.pem
+Security Group: 
+
+Next Steps:
+1. Upload: scp -i bebeclick-07010344.pem bebeclick-aws-production.zip ubuntu@:~/
+2. Connect: ssh -i bebeclick-07010344.pem ubuntu@
+3. Extract: unzip bebeclick-aws-production.zip
+4. Deploy: cd bebeclick-aws-production && pm2 start server.js --name bebeclick
+
+URLs (after deployment):
+- App: http://
+- Health: http:///health
+
+Management:
+- SSH: ssh -i bebeclick-07010344.pem ubuntu@
+- Status: ssh -i bebeclick-07010344.pem ubuntu@ "pm2 status"
+- Logs: ssh -i bebeclick-07010344.pem ubuntu@ "pm2 logs"

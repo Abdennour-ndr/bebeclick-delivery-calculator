@@ -1,0 +1,93 @@
+{
+  "timestamp": "2025-07-01T00:38:04.100Z",
+  "testUrl": "http://localhost:3001",
+  "bundleAnalysis": {
+    "original": {
+      "total": 1577270,
+      "files": {
+        ".css": {
+          "count": 1,
+          "size": 66408
+        },
+        ".js": {
+          "count": 1,
+          "size": 1397737
+        },
+        ".jpg": {
+          "count": 1,
+          "size": 55890
+        },
+        ".html": {
+          "count": 1,
+          "size": 676
+        },
+        ".webp": {
+          "count": 2,
+          "size": 41964
+        },
+        ".png": {
+          "count": 2,
+          "size": 14595
+        }
+      }
+    },
+    "optimized": {
+      "total": 1577996,
+      "files": {
+        ".css": {
+          "count": 1,
+          "size": 66408
+        },
+        ".js": {
+          "count": 1,
+          "size": 1397737
+        },
+        ".json": {
+          "count": 1,
+          "size": 786
+        },
+        ".jpg": {
+          "count": 1,
+          "size": 55890
+        },
+        ".html": {
+          "count": 1,
+          "size": 616
+        },
+        ".webp": {
+          "count": 2,
+          "size": 41964
+        },
+        ".png": {
+          "count": 2,
+          "size": 14595
+        }
+      }
+    }
+  },
+  "responseTests": [
+    {
+      "name": "Health Check",
+      "path": "/health",
+      "error": "request to http://localhost:3001/health failed, reason: "
+    },
+    {
+      "name": "API Root",
+      "path": "/api",
+      "error": "request to http://localhost:3001/api failed, reason: "
+    },
+    {
+      "name": "Frontend",
+      "path": "/",
+      "error": "request to http://localhost:3001/ failed, reason: "
+    }
+  ],
+  "lighthouseMetrics": null,
+  "memoryUsage": null,
+  "summary": {
+    "bundleOptimization": "-0.0%",
+    "averageResponseTime": null,
+    "performanceScore": "N/A",
+    "memoryEfficient": false
+  }
+}

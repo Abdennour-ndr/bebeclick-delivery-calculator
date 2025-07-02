@@ -1,0 +1,302 @@
+/* تحسينات الخطوط المستوحاة من موقع Yalidine */
+
+/* تحسين الخط الأساسي */
+.App {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 1.7 !important;
+  color: #2c3e50 !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* تحسين العناوين */
+.App-header h1 {
+  font-size: clamp(2.2rem, 5vw, 3.8rem) !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.header-subtitle {
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem) !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+}
+
+.delivery-form h2 {
+  font-size: 1.8rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  color: #2c3e50 !important;
+}
+
+/* تحسين Labels */
+.form-group label,
+.form-label {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #2c3e50 !important;
+  line-height: 1.4 !important;
+  margin-bottom: 8px !important;
+}
+
+/* تحسين حقول الإدخال */
+.form-control,
+.modern-input,
+input[type="text"],
+input[type="number"],
+input[type="tel"],
+textarea,
+select {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+  color: #2c3e50 !important;
+  padding: 14px 16px !important;
+  border: 2px solid #e1e5e9 !important;
+  border-radius: 8px !important;
+  background-color: #ffffff !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.form-control:focus,
+.modern-input:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #4CAF50 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15) !important;
+}
+
+/* تحسين خيارات الخدمة */
+.service-options label {
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+  color: #2c3e50 !important;
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  transition: background-color 0.2s ease !important;
+}
+
+/* تحسين الأزرار */
+.submit-button,
+.whatsapp-button,
+.print-button,
+.add-product-button,
+.modern-btn {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  padding: 16px 24px !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.submit-button {
+  font-size: 17px !important;
+  padding: 16px 32px !important;
+}
+
+/* تحسين النتائج */
+.result-display h3 {
+  font-size: 1.6rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+}
+
+.result-label {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #2c3e50 !important;
+  line-height: 1.5 !important;
+}
+
+.result-value {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #2c3e50 !important;
+  line-height: 1.4 !important;
+}
+
+/* تحسينات للأجهزة المحمولة */
+@media (max-width: 768px) {
+  .form-control,
+  .modern-input,
+  input[type="text"],
+  input[type="number"],
+  input[type="tel"],
+  textarea,
+  select {
+    font-size: 17px !important; /* منع التكبير التلقائي في iOS */
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    padding: 1.2rem 1rem !important;
+    border-radius: 10px !important;
+  }
+
+  .form-group label,
+  .form-label {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    margin-bottom: 0.6rem !important;
+  }
+
+  .submit-button,
+  .whatsapp-button,
+  .print-button,
+  .add-product-button,
+  .modern-btn {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    padding: 1rem !important;
+    border-radius: 8px !important;
+  }
+
+  .delivery-form h2 {
+    font-size: 1.4rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .result-display h3 {
+    font-size: 1.3rem !important;
+  }
+
+  .result-label {
+    font-size: 14px !important;
+  }
+
+  .result-value {
+    font-size: 1.1rem !important;
+  }
+}
+
+/* تحسينات للشاشات الصغيرة جداً */
+@media (max-width: 480px) {
+  .form-control,
+  .modern-input,
+  input,
+  textarea,
+  select {
+    font-size: 16px !important; /* منع التكبير في iOS */
+    padding: 0.875rem 0.75rem !important;
+    border-radius: 6px !important;
+  }
+
+  .form-group label,
+  .form-label {
+    font-size: 13px !important;
+    margin-bottom: 0.4rem !important;
+  }
+
+  .submit-button,
+  .whatsapp-button,
+  .add-product-button,
+  .modern-btn {
+    font-size: 15px !important;
+    padding: 0.875rem !important;
+    border-radius: 6px !important;
+  }
+
+  .delivery-form h2 {
+    font-size: 1.2rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+}
+
+/* تحسينات إضافية للوضوح */
+.yalidine-options h3,
+.modern-yalidine h3 {
+  font-size: 1.4rem !important;
+  font-weight: 600 !important;
+  color: #2c3e50 !important;
+  line-height: 1.3 !important;
+}
+
+.yalidine-section h4 {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  color: #34495e !important;
+  line-height: 1.4 !important;
+}
+
+/* تحسين النصوص المساعدة */
+.form-help {
+  font-size: 13px !important;
+  color: #6c757d !important;
+  line-height: 1.4 !important;
+  font-style: normal !important;
+}
+
+/* تحسين الروابط والأزرار الثانوية */
+.tab-button {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+}
+
+.tab-button.active {
+  font-weight: 600 !important;
+}
+
+/* تحسين النصوص في القوائم */
+.option-item,
+.dropdown-item,
+.suggestion-item {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+.option-title,
+.suggestion-main {
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+}
+
+.option-description,
+.suggestion-secondary {
+  font-size: 13px !important;
+  line-height: 1.3 !important;
+  color: #6c757d !important;
+}
+
+/* تحسين Footer */
+.footer-logo h3 {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+}
+
+.footer-info p,
+.footer-year p {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+/* تحسين الرسائل والتنبيهات */
+.info-box,
+.whatsapp-instructions,
+.order-instructions {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+/* تحسين العناصر التفاعلية */
+.price-value,
+.cost-value,
+.total-value {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+}
+
+.total-final .total-value {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+}

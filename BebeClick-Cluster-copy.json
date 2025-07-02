@@ -1,0 +1,21 @@
+{
+  "name": "BebeClick-Cluster-copy",
+  "clusterType": "REPLICASET",
+  "replicationSpecs": [
+    {
+      "regionConfigs": [
+        {
+          "priority": 7,
+          "regionName": "EU_WEST_3",
+          "providerName": "TENANT",
+          "backingProviderName": "AWS",
+          "electableSpecs": {
+            "instanceSize": "M0"
+          }
+        }
+      ]
+    }
+  ],
+  "tags": [],
+  "terminationProtectionEnabled": false
+}

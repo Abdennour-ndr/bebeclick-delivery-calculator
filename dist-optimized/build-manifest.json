@@ -1,0 +1,40 @@
+{
+  "buildTime": "2025-07-01T00:01:26.411Z",
+  "optimization": {
+    "totalFiles": 8,
+    "originalSize": 1577270,
+    "optimizedSize": 1577210,
+    "savedBytes": 60,
+    "savingsPercent": 0,
+    "breakdown": {
+      "html": {
+        "original": 676,
+        "optimized": 616,
+        "files": 1
+      },
+      "css": {
+        "original": 66408,
+        "optimized": 66408,
+        "files": 1
+      },
+      "js": {
+        "original": 1397737,
+        "optimized": 1397737,
+        "files": 1
+      },
+      "images": {
+        "original": 112449,
+        "optimized": 112449,
+        "files": 5
+      },
+      "other": {
+        "original": 0,
+        "optimized": 0,
+        "files": 0
+      }
+    }
+  },
+  "environment": "production",
+  "target": "aws-ec2",
+  "version": "1.0.0"
+}

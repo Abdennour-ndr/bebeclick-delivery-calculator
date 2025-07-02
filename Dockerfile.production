@@ -1,0 +1,218 @@
+# ===================================
+# AWS Production Dockerfile
+# Optimized for t2.micro/t3.micro
+# ===================================
+
+# Build stage - Frontend
+FROM node:18-alpine AS frontend-build
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY pnpm-lock.yaml ./
+
+# Install pnpm for faster builds
+RUN npm install -g pnpm
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile --prod=false
+
+# Copy source code
+COPY . .
+
+# Build optimized production bundle
+ENV NODE_ENV=production
+RUN pnpm run build
+
+# Optimize built files
+RUN npx html-minifier-terser --input-dir dist --output-dir dist-optimized \
+    --file-ext html --collapse-whitespace --remove-comments \
+    --remove-optional-tags --remove-redundant-attributes \
+    --minify-css true --minify-js true
+
+# Production stage - Backend + Frontend
+FROM node:18-alpine AS production
+
+# Install system dependencies
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    curl \
+    && rm -rf /var/cache/apk/*
+
+WORKDIR /app
+
+# Copy package files for backend
+COPY package*.json ./
+COPY pnpm-lock.yaml ./
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Install only production dependencies
+RUN pnpm install --frozen-lockfile --prod=true
+
+# Copy backend source
+COPY server.js ./
+COPY src/ ./src/
+
+# Copy optimized frontend build
+COPY --from=frontend-build /app/dist-optimized /usr/share/nginx/html
+
+# Create nginx config for production
+RUN cat > /etc/nginx/nginx.conf << 'EOF'
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log warn;
+pid /var/run/nginx.pid;
+
+events {
+    worker_connections 1024;
+    use epoll;
+    multi_accept on;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    
+    # Logging
+    log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+    access_log /var/log/nginx/access.log main;
+    
+    # Performance
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    client_max_body_size 10M;
+    
+    # Compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types
+        text/plain
+        text/css
+        text/xml
+        text/javascript
+        application/json
+        application/javascript
+        application/xml+rss
+        application/atom+xml
+        image/svg+xml;
+    
+    # Security headers
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+    add_header Referrer-Policy "strict-origin-when-cross-origin";
+    
+    # Cache settings
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|webp)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header Vary Accept-Encoding;
+    }
+    
+    server {
+        listen 80;
+        server_name _;
+        root /usr/share/nginx/html;
+        index index.html;
+        
+        # Frontend routes
+        location / {
+            try_files $uri $uri/ /index.html;
+            add_header Cache-Control "no-cache, no-store, must-revalidate";
+        }
+        
+        # API routes to backend
+        location /api/ {
+            proxy_pass http://127.0.0.1:3001;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_cache_bypass $http_upgrade;
+            proxy_read_timeout 300s;
+            proxy_connect_timeout 75s;
+        }
+        
+        # Health check
+        location /health {
+            proxy_pass http://127.0.0.1:3001/health;
+            access_log off;
+        }
+    }
+}
+EOF
+
+# Create supervisor config
+RUN cat > /etc/supervisor/conf.d/app.conf << 'EOF'
+[supervisord]
+nodaemon=true
+user=root
+logfile=/var/log/supervisor/supervisord.log
+pidfile=/var/run/supervisord.pid
+
+[program:nginx]
+command=nginx -g "daemon off;"
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/nginx/error.log
+stdout_logfile=/var/log/nginx/access.log
+
+[program:backend]
+command=node server.js
+directory=/app
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/backend.err.log
+stdout_logfile=/var/log/backend.out.log
+environment=NODE_ENV=production,PORT=3001
+user=node
+EOF
+
+# Create startup script
+RUN cat > /start.sh << 'EOF'
+#!/bin/sh
+echo "🚀 Starting BebeClick Delivery Calculator - Production"
+echo "📊 System Info:"
+echo "  - Memory: $(free -h | awk '/^Mem:/ {print $2}')"
+echo "  - CPU: $(nproc) cores"
+echo "  - Node: $(node --version)"
+echo "  - Environment: $NODE_ENV"
+
+# Start supervisor
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/app.conf
+EOF
+
+RUN chmod +x /start.sh
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S node -u 1001
+
+# Set permissions
+RUN chown -R node:nodejs /app
+RUN mkdir -p /var/log/supervisor && chown -R node:nodejs /var/log/supervisor
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost/health || exit 1
+
+# Expose port
+EXPOSE 80
+
+# Start the application
+CMD ["/start.sh"]
