@@ -73,8 +73,19 @@ const GooglePlacesInput = ({
     if (!isLoaded || !inputRef.current || autocompleteRef.current || disabled) return;
 
     try {
-      // Créer session token pour optimiser les coûts
-      sessionTokenRef.current = new window.google.maps.places.AutocompleteSessionToken();
+      // Vérifier que les classes nécessaires sont disponibles
+      if (!window.google?.maps?.places?.Autocomplete) {
+        console.error('❌ Google Places Autocomplete non disponible');
+        return;
+      }
+
+      // Créer session token pour optimiser les coûts (avec vérification)
+      if (window.google.maps.places.AutocompleteSessionToken) {
+        sessionTokenRef.current = new window.google.maps.places.AutocompleteSessionToken();
+      } else {
+        console.warn('⚠️ AutocompleteSessionToken non disponible, utilisation sans session token');
+        sessionTokenRef.current = null;
+      }
 
       // Créer les bounds
       const bounds = new window.google.maps.LatLngBounds(
@@ -83,12 +94,18 @@ const GooglePlacesInput = ({
       );
 
       // Configurer l'autocomplete
-      autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
+      const autocompleteConfig = {
         componentRestrictions: { country: 'dz' },
         types: ['geocode'],
-        fields: ['formatted_address', 'geometry', 'name', 'place_id', 'address_components'],
-        sessionToken: sessionTokenRef.current
-      });
+        fields: ['formatted_address', 'geometry', 'name', 'place_id', 'address_components']
+      };
+
+      // Ajouter session token seulement s'il est disponible
+      if (sessionTokenRef.current) {
+        autocompleteConfig.sessionToken = sessionTokenRef.current;
+      }
+
+      autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, autocompleteConfig);
 
       // Définir les bounds et les rendre strictes
       autocompleteRef.current.setBounds(bounds);
@@ -142,6 +159,11 @@ const GooglePlacesInput = ({
     // Callback vers le parent avec les données complètes
     if (onPlaceSelect) {
       onPlaceSelect(placeData);
+    }
+
+    // Créer un nouveau session token pour la prochaine recherche (avec vérification)
+    if (window.google?.maps?.places?.AutocompleteSessionToken) {
+      sessionTokenRef.current = new window.google.maps.places.AutocompleteSessionToken();
     }
 
     console.log('📍 Lieu sélectionné (Zaki):', placeData);
