@@ -12,11 +12,11 @@ primary_region = 'cdg'
   NODE_ENV = 'production'
 
 [http_service]
-  internal_port = 80
+  internal_port = 8080
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
   processes = ['app']
 
   [http_service.concurrency]
@@ -32,7 +32,7 @@ primary_region = 'cdg'
     timeout = '5s'
     grace_period = '10s'
     method = 'GET'
-    path = '/health'
+    path = '/'
 
 [[vm]]
   size = 'performance-1x'

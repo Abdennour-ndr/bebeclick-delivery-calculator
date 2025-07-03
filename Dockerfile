@@ -13,6 +13,10 @@ RUN npm ci --legacy-peer-deps
 # Copy source code
 COPY . .
 
+# Pass environment variables during build
+ARG VITE_GOOGLE_MAPS_API_KEY
+ENV VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY
+
 # Build the application
 RUN npm run build
 
