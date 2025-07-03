@@ -3,8 +3,12 @@
 Application web professionnelle et moderne pour calculer les coûts de livraison pour BebeClick. L'application prend en charge plusieurs services de livraison en Algérie avec intégration Google Maps, gestion Firebase, et interface responsive optimisée.
 
 ##  URLs de production
-- **Principal**: https://calc-bebeclick.fly.dev
-- **Backup**: https://calc-bebeclick.surge.sh
+
+### 🚀 **Déploiements actifs:**
+- **🥇 Principal**: https://calc-bebeclick.fly.dev (Fly.io - Europe CDG)
+- **🥈 Backup 1**: https://abdennour-ndr.github.io/bebeclick-delivery-calculator (GitHub Pages)
+- **🥉 Backup 2**: https://calc-bebeclick.vercel.app (Vercel - Europe)
+- **🏅 Backup 3**: https://calc-bebeclick.netlify.app (Netlify - Europe)
 
 ##  Aperçu des fonctionnalités
 
@@ -186,15 +190,25 @@ pnpm run build
 
 ###  Déploiement
 
-**Fly.io** (recommandé) :
+#### 🎯 **Stratégie multi-plateforme**
+
+**🥇 Fly.io** (Principal - Europe CDG) :
 ```bash
-fly deploy -a calc-bebeclick
+fly deploy --build-arg VITE_GOOGLE_MAPS_API_KEY=YOUR_KEY -a calc-bebeclick
 ```
 
-**Surge.sh** (backup) :
+**🥈 GitHub Pages** (Backup automatique) :
+- Déploiement automatique sur chaque push vers master
+- URL: https://abdennour-ndr.github.io/bebeclick-delivery-calculator
+
+**🥉 Vercel** (Backup manuel) :
 ```bash
-npm run build
-surge dist/ calc-bebeclick.surge.sh
+vercel --prod
+```
+
+**🏅 Netlify** (Backup manuel) :
+```bash
+netlify deploy --prod --dir=dist
 ```
 
 ###  Tests et debugging
