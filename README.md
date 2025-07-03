@@ -4,11 +4,8 @@ Application web professionnelle et moderne pour calculer les coûts de livraison
 
 ##  URLs de production
 
-### 🚀 **Déploiements actifs:**
-- ** Principal**: https://calc-bebeclick.fly.dev (Fly.io - Europe CDG)
-- ** Backup 1**: https://abdennour-ndr.github.io/bebeclick-delivery-calculator (GitHub Pages)
-- ** Backup 2**: https://calc-bebeclick.vercel.app (Vercel - Europe)
-- ** Backup 3**: https://calc-bebeclick.netlify.app (Netlify - Europe)
+###  **Déploiements actifs:**
+- **Principal**: https://calc-bebeclick.fly.dev (Fly.io - Europe CDG)
 
 ##  Aperçu des fonctionnalités
 
@@ -190,25 +187,11 @@ pnpm run build
 
 ###  Déploiement
 
-#### 🎯 **Stratégie multi-plateforme**
+#### **Stratégie multi-plateforme**
 
-**🥇 Fly.io** (Principal - Europe CDG) :
+** Fly.io** (Principal - Europe CDG) :
 ```bash
 fly deploy --build-arg VITE_GOOGLE_MAPS_API_KEY=YOUR_KEY -a calc-bebeclick
-```
-
-**🥈 GitHub Pages** (Backup automatique) :
-- Déploiement automatique sur chaque push vers master
-- URL: https://abdennour-ndr.github.io/bebeclick-delivery-calculator
-
-**🥉 Vercel** (Backup manuel) :
-```bash
-vercel --prod
-```
-
-**🏅 Netlify** (Backup manuel) :
-```bash
-netlify deploy --prod --dir=dist
 ```
 
 ###  Tests et debugging
