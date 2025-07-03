@@ -5,10 +5,10 @@ Application web professionnelle et moderne pour calculer les coûts de livraison
 ##  URLs de production
 
 ### 🚀 **Déploiements actifs:**
-- **🥇 Principal**: https://calc-bebeclick.fly.dev (Fly.io - Europe CDG)
-- **🥈 Backup 1**: https://abdennour-ndr.github.io/bebeclick-delivery-calculator (GitHub Pages)
-- **🥉 Backup 2**: https://calc-bebeclick.vercel.app (Vercel - Europe)
-- **🏅 Backup 3**: https://calc-bebeclick.netlify.app (Netlify - Europe)
+- ** Principal**: https://calc-bebeclick.fly.dev (Fly.io - Europe CDG)
+- ** Backup 1**: https://abdennour-ndr.github.io/bebeclick-delivery-calculator (GitHub Pages)
+- ** Backup 2**: https://calc-bebeclick.vercel.app (Vercel - Europe)
+- ** Backup 3**: https://calc-bebeclick.netlify.app (Netlify - Europe)
 
 ##  Aperçu des fonctionnalités
 
