@@ -1,26 +1,12 @@
 # نشر تطبيق BebeClick Delivery Calculator
 
-## خيارات النشر المتاحة
+## منصة النشر
 
-### 1. Fly.io (الخيار الأول)
+### Fly.io (الإنتاج)
 ```
 https://calc-bebeclick.fly.dev
 ```
-
-### 2. GitHub Pages (بديل مجاني)
-```
-https://[username].github.io/delivery-cost-calculator
-```
-
-### 3. Netlify (بديل سهل)
-```
-https://calc-bebeclick.netlify.app
-```
-
-### 4. Vercel (بديل سريع)
-```
-https://calc-bebeclick.vercel.app
-```
+**المزايا:** خوادم في أوروبا، أداء ممتاز، SSL تلقائي، دعم Docker
 
 ## خطوات النشر اليدوي
 
