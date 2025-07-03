@@ -1,12 +1,12 @@
-# 🚀 AWS Production Deployment Guide
+#  AWS Production Deployment Guide
 ## BebeClick Delivery Calculator - Optimized for EC2 Free Tier
 
-### 📋 Overview
+###  Overview
 This guide will help you deploy the BebeClick Delivery Calculator to AWS EC2 with maximum performance optimization for t2.micro/t3.micro instances.
 
 ---
 
-## 🎯 Performance Targets
+##  Performance Targets
 - **Time to First Byte**: < 200ms
 - **First Contentful Paint**: < 1.5s
 - **Largest Contentful Paint**: < 2.5s
@@ -16,7 +16,7 @@ This guide will help you deploy the BebeClick Delivery Calculator to AWS EC2 wit
 
 ---
 
-## 🛠️ Pre-Deployment Setup
+##  Pre-Deployment Setup
 
 ### 1. Install Dependencies
 ```bash
@@ -41,7 +41,7 @@ npm run build:complete
 
 ---
 
-## 🏗️ AWS EC2 Setup
+##  AWS EC2 Setup
 
 ### 1. Launch EC2 Instance
 - **Instance Type**: t2.micro (Free Tier) or t3.micro
@@ -69,7 +69,7 @@ cd bebeclick-delivery-calculator
 
 ---
 
-## 🚀 Automated Deployment
+##  Automated Deployment
 
 ### Method 1: One-Click Deployment Script
 ```bash
@@ -191,7 +191,7 @@ pm2 startup
 
 ---
 
-## 📊 Performance Monitoring
+##  Performance Monitoring
 
 ### 1. Run Performance Test
 ```bash
@@ -221,7 +221,7 @@ sudo tail -f /var/log/nginx/error.log
 
 ---
 
-## 🔍 Optimization Results
+##  Optimization Results
 
 ### Before Optimization
 - Bundle Size: ~2.5MB
@@ -247,7 +247,7 @@ sudo tail -f /var/log/nginx/error.log
 
 ---
 
-## 🚨 Troubleshooting
+##  Troubleshooting
 
 ### Common Issues
 
@@ -295,7 +295,7 @@ npm run build:complete
 
 ---
 
-## 🔐 Security Checklist
+##  Security Checklist
 
 - [ ] Firewall configured (UFW)
 - [ ] SSH key-based authentication
@@ -307,7 +307,7 @@ npm run build:complete
 
 ---
 
-## 📈 Scaling Options
+##  Scaling Options
 
 ### Vertical Scaling
 - Upgrade to t3.small or t3.medium
@@ -325,7 +325,7 @@ npm run build:complete
 
 ---
 
-## 🎉 Success Metrics
+##  Success Metrics
 
 After successful deployment, you should see:
 - ✅ Lighthouse Performance Score: 90+
@@ -336,11 +336,11 @@ After successful deployment, you should see:
 
 ---
 
-## 📞 Support
+##  Support
 
 For issues or questions:
 - Check logs: `pm2 logs`
 - Monitor resources: `pm2 monit`
 - Review Nginx logs: `sudo tail -f /var/log/nginx/error.log`
 
-**Deployment completed successfully! 🚀**
+**Deployment completed successfully! **
