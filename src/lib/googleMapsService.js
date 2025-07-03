@@ -1,8 +1,8 @@
 // Configuration des clés API
 const API_KEYS = {
-  places: 'AIzaSyCr7tz7ZaL3sMtrnK3Pl89qRRWJu4xBrdM',
-  distanceMatrix: 'AIzaSyCAx9J4hejd-vmM4xVoIqw_qNdC3AezZ90',
-  geocoding: 'AIzaSyCr7tz7ZaL3sMtrnK3Pl89qRRWJu4xBrdM' // Utiliser la même clé que Places pour Geocoding
+  places: 'AIzaSyD5T2bD2sqxQ90y4pJc8WEWyihlAJiYZKA',
+  distanceMatrix: 'AIzaSyD5T2bD2sqxQ90y4pJc8WEWyihlAJiYZKA',
+  geocoding: 'AIzaSyD5T2bD2sqxQ90y4pJc8WEWyihlAJiYZKA' // Utiliser la même clé que Places pour Geocoding
 };
 
 // Point de départ fixe (Bebe Click - Ouled Fayet)

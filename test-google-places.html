@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Google Places API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .success { background-color: #f0f9ff; border-color: #0ea5e9; }
+        .error { background-color: #fef2f2; border-color: #ef4444; }
+        .warning { background-color: #fffbeb; border-color: #f59e0b; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        #results {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Test Google Places API - Zaki Service</h1>
+    
+    <div class="test-section">
+        <h2> Configuration</h2>
+        <p><strong>API Key:</strong> <span id="api-key-display">Chargement...</span></p>
+        <p><strong>Bounds:</strong> Alger et environs (35.4,2.8) à (37.1,4.0)</p>
+        <p><strong>Types:</strong> geocode</p>
+        <p><strong>Pays:</strong> DZ (Algérie)</p>
+    </div>
+
+    <div class="test-section">
+        <h2> Test d'Autocomplete</h2>
+        <input
+            type="text"
+            id="autocomplete-input"
+            placeholder="Tapez une adresse, commune ou établissement (ex: Alger Centre, Blida, BebeClick Ouled Fayet...)"
+        />
+        <div id="autocomplete-status">En attente...</div>
+    </div>
+
+    <div class="test-section">
+        <h2> Résultats</h2>
+        <div id="results">Aucun test effectué</div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_KEY = 'AIzaSyD5T2bD2sqxQ90y4pJc8WEWyihlAJiYZKA';
+        const BOUNDS = {
+            southwest: { lat: 35.2, lng: 2.5 },
+            northeast: { lat: 37.3, lng: 4.3 }
+        };
+
+        // Afficher l'API Key (masquée)
+        document.getElementById('api-key-display').textContent = 
+            API_KEY ? `${API_KEY.substring(0, 10)}...` : 'NON DÉFINIE';
+
+        // Logger
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const results = document.getElementById('results');
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            results.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            console.log(`${prefix} ${message}`);
+        }
+
+        // Charger Google Maps API
+        function loadGoogleMapsAPI() {
+            return new Promise((resolve, reject) => {
+                if (window.google && window.google.maps && window.google.maps.places) {
+                    log('Google Maps API déjà chargée', 'success');
+                    resolve();
+                    return;
+                }
+
+                log('Chargement de Google Maps API...');
+
+                // Définir callback global
+                window.initGoogleMapsTest = () => {
+                    log('Google Maps API chargée avec succès via callback', 'success');
+                    resolve();
+                };
+
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places&language=fr&callback=initGoogleMapsTest`;
+                script.async = true;
+
+                script.onerror = () => {
+                    log('Erreur lors du chargement de Google Maps API', 'error');
+                    reject(new Error('Failed to load Google Maps API'));
+                };
+
+                document.head.appendChild(script);
+            });
+        }
+
+        // Initialiser l'autocomplete
+        function initializeAutocomplete() {
+            const input = document.getElementById('autocomplete-input');
+            const status = document.getElementById('autocomplete-status');
+
+            try {
+                log('Initialisation de l\'autocomplete...');
+
+                // Vérifier la disponibilité
+                log(`Vérification: window.google = ${!!window.google}`);
+                log(`Vérification: window.google.maps = ${!!window.google?.maps}`);
+                log(`Vérification: window.google.maps.places = ${!!window.google?.maps?.places}`);
+                log(`Vérification: window.google.maps.places.Autocomplete = ${!!window.google?.maps?.places?.Autocomplete}`);
+
+                if (!window.google?.maps?.places?.Autocomplete) {
+                    throw new Error('Google Places Autocomplete non disponible');
+                }
+
+                // Configuration
+                const bounds = new window.google.maps.LatLngBounds(
+                    { lat: BOUNDS.southwest.lat, lng: BOUNDS.southwest.lng },
+                    { lat: BOUNDS.northeast.lat, lng: BOUNDS.northeast.lng }
+                );
+
+                const autocompleteConfig = {
+                    componentRestrictions: { country: 'dz' },
+                    // بدون قيود أنواع للحصول على جميع النتائج
+                    fields: ['formatted_address', 'geometry', 'name', 'place_id', 'types', 'business_status', 'address_components']
+                };
+
+                // Créer l'autocomplete
+                const autocomplete = new window.google.maps.places.Autocomplete(input, autocompleteConfig);
+                autocomplete.setBounds(bounds);
+                autocomplete.setOptions({ strictBounds: false });
+
+                // Écouter les sélections
+                autocomplete.addListener('place_changed', () => {
+                    const place = autocomplete.getPlace();
+                    
+                    if (!place.geometry) {
+                        log('Aucune géométrie trouvée pour ce lieu', 'warning');
+                        return;
+                    }
+
+                    const placeData = {
+                        name: place.name || '',
+                        formatted_address: place.formatted_address || '',
+                        place_id: place.place_id || '',
+                        lat: place.geometry.location.lat(),
+                        lng: place.geometry.location.lng()
+                    };
+
+                    log(`Lieu sélectionné: ${placeData.formatted_address}`, 'success');
+                    log(`Coordonnées: ${placeData.lat}, ${placeData.lng}`, 'success');
+                    log(`Place ID: ${placeData.place_id}`, 'info');
+                });
+
+                status.textContent = ' Autocomplete initialisé - Tapez pour tester';
+                status.className = 'success';
+                log('Autocomplete initialisé avec succès', 'success');
+
+            } catch (error) {
+                status.textContent = ` Erreur: ${error.message}`;
+                status.className = 'error';
+                log(`Erreur d'initialisation: ${error.message}`, 'error');
+            }
+        }
+
+        // Démarrer le test
+        async function startTest() {
+            log('=== DÉBUT DU TEST GOOGLE PLACES ===');
+            
+            try {
+                await loadGoogleMapsAPI();
+                initializeAutocomplete();
+                log('=== TEST TERMINÉ AVEC SUCCÈS ===', 'success');
+            } catch (error) {
+                log(`=== TEST ÉCHOUÉ: ${error.message} ===`, 'error');
+            }
+        }
+
+        // Démarrer quand la page est chargée
+        document.addEventListener('DOMContentLoaded', startTest);
+    </script>
+</body>
+</html>

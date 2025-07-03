@@ -1,43 +1,37 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { MapPin, Search } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, MapPin, Store } from 'lucide-react';
 
-/**
- * Google Places Input Component
- * Pour intégration dans DeliveryForm - Service Zaki
- * Limité à la région d'Alger et ses environs
- */
 const GooglePlacesInput = ({ 
   value = '',
   onChange,
   onPlaceSelect,
-  placeholder = "Rechercher une adresse à Alger...",
+  placeholder = "Rechercher une adresse, commune, magasin ou entreprise...",
   className = "",
   style = {},
   disabled = false
 }) => {
   const inputRef = useRef(null);
   const autocompleteRef = useRef(null);
-  const sessionTokenRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
-
-  // Bounds pour la région d'Alger (Alger + Blida + Boumerdes + Tipaza)
-  const algiersBounds = {
-    southwest: { lat: 35.4, lng: 2.8 },  // Sud-Ouest
-    northeast: { lat: 37.1, lng: 4.0 }   // Nord-Est
-  };
 
   // Charger Google Maps API
   useEffect(() => {
     if (window.google && window.google.maps && window.google.maps.places) {
+      console.log('✅ Google Maps API déjà disponible');
       setIsLoaded(true);
       return;
     }
 
-    // Vérifier si le script est déjà en cours de chargement
-    if (document.querySelector('script[src*="maps.googleapis.com"]')) {
+    // Vérifier si le script existe déjà avec le même API key
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    const existingScript = document.querySelector(`script[src*="key=${apiKey}"]`);
+
+    if (existingScript) {
+      console.log('⏳ Script Google Maps déjà en cours de chargement...');
       const checkLoaded = setInterval(() => {
         if (window.google && window.google.maps && window.google.maps.places) {
+          console.log('✅ Google Maps API chargée (script existant)');
           setIsLoaded(true);
           clearInterval(checkLoaded);
         }
@@ -45,16 +39,27 @@ const GooglePlacesInput = ({
       return () => clearInterval(checkLoaded);
     }
 
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places&language=fr&loading=async`;
-    script.async = true;
-    script.defer = true;
-    
-    script.onload = () => {
-      setIsLoaded(true);
-      console.log('✅ Google Maps API chargée pour Places Autocomplete');
-    };
+    // Supprimer les anciens scripts Google Maps
+    const oldScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]');
+    oldScripts.forEach(script => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    });
 
+    // Créer callback global unique
+    if (!window.initGoogleMaps) {
+      window.initGoogleMaps = () => {
+        console.log('✅ Google Maps API chargée via callback');
+        setIsLoaded(true);
+      };
+    }
+
+    const script = document.createElement('script');
+    console.log('🔑 API Key utilisée:', apiKey ? `${apiKey.substring(0, 10)}...` : 'UNDEFINED');
+
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr&callback=initGoogleMaps`;
+    script.async = true;
     script.onerror = () => {
       console.error('❌ Erreur lors du chargement de Google Maps API');
     };
@@ -62,9 +67,7 @@ const GooglePlacesInput = ({
     document.head.appendChild(script);
 
     return () => {
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
+      // Ne pas supprimer le script au démontage pour éviter les rechargements
     };
   }, []);
 
@@ -72,111 +75,98 @@ const GooglePlacesInput = ({
   useEffect(() => {
     if (!isLoaded || !inputRef.current || autocompleteRef.current || disabled) return;
 
-    try {
-      // Vérifier que les classes nécessaires sont disponibles
-      if (!window.google?.maps?.places?.Autocomplete) {
-        console.error('❌ Google Places Autocomplete non disponible');
-        return;
+    console.log('🔄 Initialisation de l\'autocomplete...');
+
+    const initTimeout = setTimeout(() => {
+      try {
+        if (!window.google?.maps?.places?.Autocomplete) {
+          console.error('❌ Google Places Autocomplete non disponible');
+          return;
+        }
+
+        const autocompleteConfig = {
+          componentRestrictions: { country: 'dz' },
+          // إزالة قيود الأنواع للحصول على جميع النتائج (عناوين + محلات + مدن)
+          // types: [], // بدون قيود أنواع
+          fields: ['formatted_address', 'geometry', 'name', 'place_id', 'types', 'business_status', 'address_components']
+        };
+
+        autocompleteRef.current = new window.google.maps.places.Autocomplete(
+          inputRef.current, 
+          autocompleteConfig
+        );
+
+        // توسيع النطاق ليشمل كامل المنطقة الكبرى للجزائر
+        const bounds = new window.google.maps.LatLngBounds(
+          { lat: 35.2, lng: 2.5 },  // توسيع الحدود الجنوبية والغربية
+          { lat: 37.3, lng: 4.3 }   // توسيع الحدود الشمالية والشرقية
+        );
+        autocompleteRef.current.setBounds(bounds);
+        // تغيير strictBounds إلى false للسماح بنتائج خارج الحدود قليلاً
+        autocompleteRef.current.setOptions({ strictBounds: false });
+
+        autocompleteRef.current.addListener('place_changed', () => {
+          const place = autocompleteRef.current.getPlace();
+          
+          if (!place.geometry) {
+            console.warn('⚠️ Aucune géométrie trouvée pour ce lieu');
+            return;
+          }
+
+          // Déterminer le type de lieu
+          const placeTypes = place.types || [];
+          const isEstablishment = placeTypes.includes('establishment');
+          const isStore = placeTypes.includes('store');
+          const isBusinessPlace = isEstablishment || isStore;
+
+          const placeData = {
+            name: place.name || '',
+            formatted_address: place.formatted_address || '',
+            place_id: place.place_id || '',
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng(),
+            types: placeTypes,
+            business_status: place.business_status || null,
+            isEstablishment: isBusinessPlace
+          };
+
+          setSelectedPlace(placeData);
+
+          // Utiliser le nom pour les établissements, l'adresse pour les lieux géographiques
+          const displayValue = isBusinessPlace && place.name
+            ? `${place.name} - ${place.formatted_address}`
+            : place.formatted_address || place.name || '';
+
+          if (onChange) {
+            onChange(displayValue);
+          }
+
+          if (onPlaceSelect) {
+            onPlaceSelect(placeData);
+          }
+
+          const placeType = isBusinessPlace ? 'Établissement' : 'Adresse';
+          console.log(`${placeType} sélectionné:`, placeData);
+        });
+
+        console.log('✅ Google Places Autocomplete initialisé pour la région d\'Alger étendue');
+        console.log('📍 Bounds configurés:', {
+          southwest: { lat: 35.2, lng: 2.5 },
+          northeast: { lat: 37.3, lng: 4.3 }
+        });
+        console.log('🔍 Types de recherche: Tous types (sans restriction)');
+      } catch (error) {
+        console.error('❌ Erreur lors de l\'initialisation:', error);
       }
+    }, 1000);
 
-      // Créer session token pour optimiser les coûts (avec vérification)
-      if (window.google.maps.places.AutocompleteSessionToken) {
-        sessionTokenRef.current = new window.google.maps.places.AutocompleteSessionToken();
-      } else {
-        console.warn('⚠️ AutocompleteSessionToken non disponible, utilisation sans session token');
-        sessionTokenRef.current = null;
-      }
-
-      // Créer les bounds
-      const bounds = new window.google.maps.LatLngBounds(
-        new window.google.maps.LatLng(algiersBounds.southwest.lat, algiersBounds.southwest.lng),
-        new window.google.maps.LatLng(algiersBounds.northeast.lat, algiersBounds.northeast.lng)
-      );
-
-      // Configurer l'autocomplete
-      const autocompleteConfig = {
-        componentRestrictions: { country: 'dz' },
-        types: ['geocode'],
-        fields: ['formatted_address', 'geometry', 'name', 'place_id', 'address_components']
-      };
-
-      // Ajouter session token seulement s'il est disponible
-      if (sessionTokenRef.current) {
-        autocompleteConfig.sessionToken = sessionTokenRef.current;
-      }
-
-      autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, autocompleteConfig);
-
-      // Définir les bounds et les rendre strictes
-      autocompleteRef.current.setBounds(bounds);
-      autocompleteRef.current.setOptions({ strictBounds: true });
-
-      // Écouter les sélections
-      autocompleteRef.current.addListener('place_changed', handlePlaceSelect);
-
-      console.log('✅ Google Places Autocomplete initialisé pour Alger (DeliveryForm)');
-    } catch (error) {
-      console.error('❌ Erreur lors de l\'initialisation de l\'autocomplete:', error);
-    }
+    return () => clearTimeout(initTimeout);
   }, [isLoaded, disabled]);
 
-  // Nettoyer l'autocomplete si désactivé
-  useEffect(() => {
-    if (disabled && autocompleteRef.current) {
-      window.google.maps.event.clearInstanceListeners(autocompleteRef.current);
-      autocompleteRef.current = null;
-      setSelectedPlace(null);
-    }
-  }, [disabled]);
-
-  // Gérer la sélection d'un lieu
-  const handlePlaceSelect = () => {
-    if (!autocompleteRef.current) return;
-
-    const place = autocompleteRef.current.getPlace();
-    
-    if (!place.geometry) {
-      console.warn('⚠️ Aucune géométrie trouvée pour ce lieu');
-      return;
-    }
-
-    const placeData = {
-      name: place.name || '',
-      formatted_address: place.formatted_address || '',
-      place_id: place.place_id || '',
-      lat: place.geometry.location.lat(),
-      lng: place.geometry.location.lng(),
-      address_components: place.address_components || []
-    };
-
-    setSelectedPlace(placeData);
-
-    // Mettre à jour la valeur de l'input
-    if (onChange) {
-      onChange(place.formatted_address || place.name || '');
-    }
-
-    // Callback vers le parent avec les données complètes
-    if (onPlaceSelect) {
-      onPlaceSelect(placeData);
-    }
-
-    // Créer un nouveau session token pour la prochaine recherche (avec vérification)
-    if (window.google?.maps?.places?.AutocompleteSessionToken) {
-      sessionTokenRef.current = new window.google.maps.places.AutocompleteSessionToken();
-    }
-
-    console.log('📍 Lieu sélectionné (Zaki):', placeData);
-  };
-
-  // Gérer les changements manuels dans l'input
   const handleInputChange = (e) => {
     const newValue = e.target.value;
-    if (onChange) {
-      onChange(newValue);
-    }
+    onChange(newValue);
     
-    // Réinitialiser la sélection si l'utilisateur tape manuellement
     if (selectedPlace && newValue !== selectedPlace.formatted_address) {
       setSelectedPlace(null);
     }
@@ -184,7 +174,6 @@ const GooglePlacesInput = ({
 
   return (
     <div style={{ position: 'relative', width: '100%' }}>
-      {/* Input avec icône de recherche */}
       <div style={{ position: 'relative' }}>
         <Search 
           size={16} 
@@ -209,27 +198,37 @@ const GooglePlacesInput = ({
             ...style,
             paddingLeft: disabled ? style.paddingLeft || '12px' : '40px',
             backgroundColor: disabled ? '#f9fafb' : '#ffffff',
-            borderColor: disabled ? '#e5e7eb' : (selectedPlace ? '#10b981' : '#d1d5db'),
-            ...style
+            borderColor: disabled ? '#e5e7eb' : (selectedPlace ? '#10b981' : '#d1d5db')
           }}
         />
         
-        {/* Indicateur de lieu sélectionné */}
         {selectedPlace && !disabled && (
-          <MapPin 
-            size={16} 
-            style={{ 
-              position: 'absolute', 
-              right: '12px', 
-              top: '50%', 
-              transform: 'translateY(-50%)', 
-              color: '#10b981'
-            }} 
-          />
+          selectedPlace.isEstablishment ? (
+            <Store
+              size={16}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#f59e0b'
+              }}
+            />
+          ) : (
+            <MapPin
+              size={16}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#10b981'
+              }}
+            />
+          )
         )}
       </div>
 
-      {/* Message de chargement */}
       {!isLoaded && !disabled && (
         <div style={{
           position: 'absolute',
@@ -249,22 +248,30 @@ const GooglePlacesInput = ({
         </div>
       )}
 
-      {/* Informations du lieu sélectionné (optionnel) */}
       {selectedPlace && !disabled && (
         <div style={{
           marginTop: '4px',
           padding: '6px 8px',
-          backgroundColor: '#f0fdf4',
-          border: '1px solid #bbf7d0',
+          backgroundColor: selectedPlace.isEstablishment ? '#fef3c7' : '#f0fdf4',
+          border: `1px solid ${selectedPlace.isEstablishment ? '#fbbf24' : '#bbf7d0'}`,
           borderRadius: '4px',
           fontSize: '12px',
-          color: '#166534',
+          color: selectedPlace.isEstablishment ? '#92400e' : '#166534',
           display: 'flex',
           alignItems: 'center',
           gap: '4px'
         }}>
-          <MapPin size={12} />
-          <span>Adresse Google Maps sélectionnée</span>
+          {selectedPlace.isEstablishment ? (
+            <Store size={12} style={{ color: '#92400e' }} />
+          ) : (
+            <MapPin size={12} style={{ color: '#166534' }} />
+          )}
+          <span>
+            {selectedPlace.isEstablishment
+              ? `Établissement sélectionné: ${selectedPlace.name}`
+              : 'Adresse sélectionnée'
+            }
+          </span>
         </div>
       )}
     </div>
