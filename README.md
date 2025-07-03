@@ -13,7 +13,7 @@ Application web professionnelle et moderne pour calculer les coûts de livraison
 - **Yalidine** avec sélection wilaya/commune Firebase
 - **Jamal Delivery** (en développement)
 
-### 🗺 Intégration Google Maps avancée
+###  Intégration Google Maps avancée
 - **Places Autocomplete** pour Zaki (région d'Alger étendue)
 - **Recherche d'établissements** (BebeClick, magasins, entreprises)
 - **Géolocalisation précise** avec bounds géographiques
@@ -34,7 +34,7 @@ Application web professionnelle et moderne pour calculer les coûts de livraison
   - Arrondi intelligent avec Math.floor
 - **Jamal Delivery**: Interface prête (tarifs à définir)
 
-### 🗄 Gestion des produits Firebase
+###  Gestion des produits Firebase
 - **Base de données Firebase Firestore** en temps réel
 - **CRUD complet**: Créer, lire, modifier, supprimer
 - **Recherche intelligente** par nom, SKU, catégorie
@@ -329,6 +329,6 @@ Contacter l'équipe de développement pour :
 
 ---
 
-*Développé avec ❤️ pour BebeClick*
+*Développé avec Abdennour Nedjar pour BebeClick*
 *Dernière mise à jour : Janvier 2025*
 
