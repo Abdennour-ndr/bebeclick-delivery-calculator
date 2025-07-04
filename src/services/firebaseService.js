@@ -490,20 +490,105 @@ class FirebaseService {
     }
   }
 
+  // البحث عن أسعار التوصيل حسب الولاية
+  async getDeliveryPricesByWilaya(wilayaCode, service = null) {
+    try {
+      console.log(`🔍 البحث عن أسعار التوصيل للولاية: ${wilayaCode}`);
+
+      let q;
+      if (service) {
+        q = query(
+          collection(db, this.collections.deliveryPricing),
+          where('wilayaCode', '==', parseInt(wilayaCode)),
+          where('service', '==', service),
+          where('status', '==', 'active'),
+          orderBy('commune', 'asc')
+        );
+      } else {
+        q = query(
+          collection(db, this.collections.deliveryPricing),
+          where('wilayaCode', '==', parseInt(wilayaCode)),
+          where('status', '==', 'active'),
+          orderBy('service', 'asc')
+        );
+      }
+
+      const querySnapshot = await getDocs(q);
+      const prices = [];
+
+      querySnapshot.forEach((doc) => {
+        prices.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+
+      console.log(`✅ تم العثور على ${prices.length} سعر للولاية ${wilayaCode}`);
+      return prices;
+
+    } catch (error) {
+      console.error('❌ خطأ في البحث عن أسعار الولاية:', error);
+      throw error;
+    }
+  }
+
+  // البحث عن أسعار التوصيل حسب البلدية
+  async getDeliveryPricesByCommune(wilayaCode, communeName, service = null) {
+    try {
+      console.log(`🔍 البحث عن أسعار التوصيل للبلدية: ${communeName} في الولاية ${wilayaCode}`);
+
+      let q;
+      if (service) {
+        q = query(
+          collection(db, this.collections.deliveryPricing),
+          where('wilayaCode', '==', parseInt(wilayaCode)),
+          where('commune', '==', communeName),
+          where('service', '==', service),
+          where('status', '==', 'active')
+        );
+      } else {
+        q = query(
+          collection(db, this.collections.deliveryPricing),
+          where('wilayaCode', '==', parseInt(wilayaCode)),
+          where('commune', '==', communeName),
+          where('status', '==', 'active'),
+          orderBy('service', 'asc')
+        );
+      }
+
+      const querySnapshot = await getDocs(q);
+      const prices = [];
+
+      querySnapshot.forEach((doc) => {
+        prices.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+
+      console.log(`✅ تم العثور على ${prices.length} سعر للبلدية ${communeName}`);
+      return prices;
+
+    } catch (error) {
+      console.error('❌ خطأ في البحث عن أسعار البلدية:', error);
+      throw error;
+    }
+  }
+
   // البحث عن سعر توصيل محدد
   async getDeliveryPrice(destination, deliveryType = 'home', weight = 0, dimensions = {}, declaredValue = 0) {
     try {
       console.log(`🔍 البحث عن سعر توصيل: ${destination}`);
-      
+
       // منطق البحث المبسط - يمكن تحسينه لاحقاً
       const q = query(
         collection(db, this.collections.deliveryPricing),
         where('status', '==', 'active'),
         limit(10)
       );
-      
+
       const querySnapshot = await getDocs(q);
-      
+
       // البحث المحلي في النتائج
       let bestMatch = null;
       querySnapshot.forEach((doc) => {
@@ -516,7 +601,7 @@ class FirebaseService {
           };
         }
       });
-      
+
       if (bestMatch) {
         console.log('✅ تم العثور على سعر مطابق');
         return bestMatch;

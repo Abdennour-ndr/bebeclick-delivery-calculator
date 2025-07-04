@@ -4,13 +4,14 @@ import './modern-styles.css';
 import './mobile-enhancements.css';
 import './modern-components.css';
 import './professional-ui.css';
-import { Calculator, Package, DollarSign, Building2, Settings, Database, Smartphone, Monitor } from 'lucide-react';
+import { Calculator, Package, DollarSign, Building2, Settings, Database, Smartphone, Monitor, Search } from 'lucide-react';
 import DeliveryForm from './components/DeliveryForm';
 // import ProductManager from './components/ProductManagerFirebase';
 // import YalidinePricing from './components/YalidinePricing';
 // import YalidineOffices from './components/YalidineOffices';
 import YalidineDiagnostic from './components/YalidineDiagnostic';
 import AdminDashboard from './components/admin/AdminDashboard';
+import DeliveryPricesSearch from './components/DeliveryPricesSearch';
 import ResponsiveContainer, { ShowOn, HideOn, ResponsiveText, ResponsiveIcon } from './components/ResponsiveContainer';
 import DeviceInfo, { PerformanceInfo, NetworkInfo } from './components/DeviceInfo';
 import MobileOptimizations from './components/MobileOptimizations';
@@ -48,10 +49,9 @@ function App() {
     <MobileOptimizations>
       <ResponsiveContainer className="App">
         <main className="App-main">
-        {/* Navigation tabs responsive - Hidden when only one tab */}
-        {(showAdmin || showDiagnostic) && (
-          <div className="tabs-container">
-            <div className="tabs-header">
+        {/* Navigation tabs responsive - Always show calculator and prices */}
+        <div className="tabs-container">
+          <div className="tabs-header">
             <button
               className={`tab-button ${activeTab === 'calculator' ? 'active' : ''}`}
               onClick={() => setActiveTab('calculator')}
@@ -66,6 +66,23 @@ function App() {
                 desktop="Calculateur de livraison"
                 tablet="Calculateur"
                 mobile="Calc"
+              />
+            </button>
+
+            <button
+              className={`tab-button ${activeTab === 'prices' ? 'active' : ''}`}
+              onClick={() => setActiveTab('prices')}
+            >
+              <ResponsiveIcon
+                icon={Search}
+                desktopSize={18}
+                mobileSize={16}
+                smallMobileSize={14}
+              />
+              <ResponsiveText
+                desktop="البحث عن الأسعار"
+                tablet="الأسعار"
+                mobile="سعر"
               />
             </button>
 
@@ -115,11 +132,11 @@ function App() {
             )}
             </div>
           </div>
-        )}
 
         {/* Contenu des tabs responsive */}
         <div className="tab-content">
           {activeTab === 'calculator' && <DeliveryForm />}
+          {activeTab === 'prices' && <DeliveryPricesSearch />}
           {activeTab === 'admin' && <AdminDashboard />}
           {activeTab === 'diagnostic' && <YalidineDiagnostic />}
         </div>
