@@ -2,8 +2,10 @@
 
 Application web professionnelle et moderne pour calculer les coûts de livraison pour BebeClick. L'application prend en charge plusieurs services de livraison en Algérie avec intégration Google Maps, gestion Firebase, et interface responsive optimisée.
 
-## URL de production
-- **Production**: https://calc-bebeclick.fly.dev
+##  URLs de production
+
+###  **Déploiements actifs:**
+- **Principal**: https://calc-bebeclick.fly.dev (Fly.io - Europe CDG)
 
 ##  Aperçu des fonctionnalités
 
@@ -27,10 +29,11 @@ Application web professionnelle et moderne pour calculer les coûts de livraison
   - Support des établissements (ex: "BebeClick في ولاد فايت")
   - Génération automatique de liens Google Maps
 - **Yalidine**:
-  - Sélection wilaya/commune depuis Firebase
+  - Sélection wilaya/commune depuis Firebase (1541 prix corrects)
   - Calcul avec poids volumétrique et zones (1-5)
   - Frais supplémentaires automatiques (50-100 DA/kg)
   - Arrondi intelligent avec Math.floor
+  - **Prix corrigés**: Oran 650 DA (bureau), 800 DA (domicile)
 - **Jamal Delivery**: Interface prête (tarifs à définir)
 
 ###  Gestion des produits Firebase
@@ -185,7 +188,13 @@ pnpm run build
 
 ### Déploiement
 
+<<<<<<< HEAD
 **Fly.io** (Production) :
+=======
+#### **Stratégie multi-plateforme**
+
+** Fly.io** (Principal - Europe CDG) :
+>>>>>>> 1a594b2689b95caa219eae17585119a5d3cbe1a3
 ```bash
 fly deploy --build-arg VITE_GOOGLE_MAPS_API_KEY=YOUR_KEY -a calc-bebeclick
 ```
@@ -317,6 +326,26 @@ Contacter l'équipe de développement pour :
 - **Uptime** : Monitoring Fly.io
 
 ## Licence
+
+##  Changelog récent
+
+### Version 2.1.0 - Janvier 2025
+- ✅ **Correction majeure des prix Yalidine**
+  - Import des prix corrects depuis CSV (1541 prix)
+  - Oran: 650 DA (bureau), 800 DA (domicile)
+  - Firebase comme source unique de vérité
+- ✅ **Optimisation Firebase Service**
+  - Migration de `locations` vers `delivery_pricing`
+  - Suppression des sources de données conflictuelles
+  - Amélioration des performances de chargement
+
+### Version 2.0.0 - Janvier 2025
+- ✅ **Intégration Firebase complète**
+- ✅ **Google Maps Places Autocomplete**
+- ✅ **Interface mobile optimisée**
+- ✅ **Gestion produits avancée**
+
+---
 
 **Projet propriétaire BebeClick** - Tous droits réservés
 
