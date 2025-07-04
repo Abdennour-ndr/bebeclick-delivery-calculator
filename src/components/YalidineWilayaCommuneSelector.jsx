@@ -152,10 +152,15 @@ function YalidineWilayaCommuneSelector({ value, onChange }) {
         wilayaName: selectedWilaya.name,
         communeName: selectedCommune.name,
         pricing: {
-          yalidine: selectedCommune.pricing || {}
+          yalidine: selectedCommune.pricing || {}, // البيانات مباشرة من Firebase
+          source: 'firebase'
         },
         zone: selectedWilaya.zone !== undefined ? selectedWilaya.zone : (selectedWilaya.deliveryConfig?.pricingZone !== undefined ? selectedWilaya.deliveryConfig.pricingZone : 1)
       };
+
+      console.log('📍 Destination sélectionnée avec prix détaillés:');
+      console.log('  - selectedCommune.pricing:', selectedCommune.pricing);
+      console.log('  - fullDestinationInfo.pricing.yalidine:', fullDestinationInfo.pricing.yalidine);
 
       console.log('📍 Destination sélectionnée avec prix:', fullDestinationInfo);
       onChange(fullDestinationInfo);
@@ -217,16 +222,19 @@ function YalidineWilayaCommuneSelector({ value, onChange }) {
       // Convertir en format React Select
       const communeOptions = communesList
         .sort((a, b) => a.name.localeCompare(b.name))
-        .map(commune => ({
-          value: commune.name,
-          label: commune.name,
-          name: commune.name,
-          has_stop_desk: commune.pricing?.yalidine?.office > 0,
-          delivery_time: 48,
-          pricing: commune.pricing?.yalidine,
-          is_deliverable: true,
-          wilayaCode: wilayaCode // إضافة معرف الولاية لتجنب إعادة التحميل
-        }));
+        .map(commune => {
+          console.log(`🏘️ معالجة بلدية: ${commune.name}, pricing:`, commune.pricing);
+          return {
+            value: commune.name,
+            label: commune.name,
+            name: commune.name,
+            has_stop_desk: commune.pricing?.office > 0,
+            delivery_time: 48,
+            pricing: commune.pricing, // البيانات مخزنة مباشرة في pricing
+            is_deliverable: true,
+            wilayaCode: wilayaCode // إضافة معرف الولاية لتجنب إعادة التحميل
+          };
+        });
 
       setCommunes(communeOptions);
       setSelectedCommune(null); // Reset commune selection

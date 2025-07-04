@@ -37,87 +37,93 @@ class FirebaseService {
    * الولايات والبلديات
    */
   
-  // الحصول على جميع الولايات
+  // الحصول على جميع الولايات من delivery_pricing
   async getWilayas() {
     try {
-      console.log('🗺️ جلب الولايات من Firebase...');
-      
+      console.log('🗺️ جلب الولايات من delivery_pricing...');
+
       const q = query(
-        collection(db, this.collections.locations),
-        where('type', '==', 'wilaya'),
-        orderBy('code', 'asc')
+        collection(db, this.collections.deliveryPricing),
+        where('service', '==', 'yalidine'),
+        where('status', '==', 'active')
       );
-      
+
       const querySnapshot = await getDocs(q);
-      const wilayas = [];
-      
+      const wilayaMap = new Map(); // لتجنب التكرار
+
       querySnapshot.forEach((doc) => {
-        wilayas.push({
-          id: doc.id,
-          ...doc.data()
-        });
+        const data = doc.data();
+        const wilayaKey = data.wilayaCode;
+
+        if (!wilayaMap.has(wilayaKey)) {
+          wilayaMap.set(wilayaKey, {
+            id: `wilaya_${data.wilayaCode}`,
+            code: data.wilayaCode.toString().padStart(2, '0'),
+            name: data.wilayaName,
+            zone: data.zone,
+            wilayaCode: data.wilayaCode,
+            type: 'wilaya',
+            is_deliverable: true
+          });
+        }
       });
-      
-      console.log(`✅ تم جلب ${wilayas.length} ولاية`);
+
+      // تحويل Map إلى Array وترتيب حسب الكود
+      const wilayas = Array.from(wilayaMap.values()).sort((a, b) => a.wilayaCode - b.wilayaCode);
+
+      console.log(`✅ تم جلب ${wilayas.length} ولاية من delivery_pricing`);
       return wilayas;
-      
+
     } catch (error) {
       console.error('❌ خطأ في جلب الولايات:', error);
       throw error;
     }
   }
 
-  // الحصول على بلديات ولاية معينة
+  // الحصول على بلديات ولاية معينة من delivery_pricing
   async getCommunesByWilaya(wilayaCode) {
     try {
-      console.log(`🏘️ جلب بلديات ولاية ${wilayaCode}...`);
+      console.log(`🏘️ جلب بلديات ولاية ${wilayaCode} من delivery_pricing...`);
 
       // تحويل wilayaCode إلى رقم للتأكد
       const numericWilayaCode = parseInt(wilayaCode);
       console.log(`🔍 البحث عن البلديات بـ wilayaCode: ${numericWilayaCode} (نوع: ${typeof numericWilayaCode})`);
 
       const q = query(
-        collection(db, this.collections.locations),
-        where('type', '==', 'commune'),
-        where('hierarchy.wilayaCode', '==', numericWilayaCode),
-        orderBy('name', 'asc')
+        collection(db, this.collections.deliveryPricing),
+        where('wilayaCode', '==', numericWilayaCode),
+        where('service', '==', 'yalidine'),
+        where('status', '==', 'active')
       );
 
       const querySnapshot = await getDocs(q);
       const communes = [];
+      const communeMap = new Map(); // لتجنب التكرار
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        console.log(`📍 بلدية موجودة: ${data.name}, wilayaCode: ${data.hierarchy?.wilayaCode}`);
-        communes.push({
-          id: doc.id,
-          ...data
-        });
+        const communeKey = data.commune;
+
+        if (!communeMap.has(communeKey)) {
+          console.log(`📍 بلدية موجودة: ${data.commune}, wilayaCode: ${data.wilayaCode}, أسعار: ${data.pricing.home}دج (منزل), ${data.pricing.office}دج (مكتب)`);
+
+          communeMap.set(communeKey, {
+            id: doc.id,
+            name: data.commune,
+            wilayaCode: data.wilayaCode,
+            wilayaName: data.wilayaName,
+            zone: data.zone,
+            pricing: data.pricing,
+            status: data.status,
+            metadata: data.metadata
+          });
+        }
       });
 
-      console.log(`✅ تم جلب ${communes.length} بلدية للولاية ${numericWilayaCode}`);
+      // تحويل Map إلى Array وترتيب حسب الاسم
+      communes.push(...Array.from(communeMap.values()).sort((a, b) => a.name.localeCompare(b.name)));
 
-      // إذا لم نجد بلديات، نحاول البحث بدون ترتيب
-      if (communes.length === 0) {
-        console.log(`🔄 محاولة البحث بدون ترتيب...`);
-        const q2 = query(
-          collection(db, this.collections.locations),
-          where('type', '==', 'commune'),
-          where('hierarchy.wilayaCode', '==', numericWilayaCode)
-        );
-
-        const querySnapshot2 = await getDocs(q2);
-        querySnapshot2.forEach((doc) => {
-          const data = doc.data();
-          console.log(`📍 بلدية موجودة (بحث ثاني): ${data.name}`);
-          communes.push({
-            id: doc.id,
-            ...data
-          });
-        });
-
-        console.log(`✅ البحث الثاني: ${communes.length} بلدية`);
-      }
+      console.log(`✅ تم جلب ${communes.length} بلدية للولاية ${numericWilayaCode} من delivery_pricing`);
 
       return communes;
 
