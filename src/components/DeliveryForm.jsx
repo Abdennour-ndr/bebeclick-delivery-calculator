@@ -9,7 +9,6 @@ import ProductImporter from './ProductImporter';
 import { calculateZakiCost, calculateJamalDeliveryCost } from '../lib/pricing';
 import googleMapsService from '../lib/googleMapsService';
 import firebaseService from '../services/firebaseService';
-import productsGoogleSheetsService from '../services/productsGoogleSheetsService';
 
 
 import { testMathUtils } from '../lib/mathUtils';

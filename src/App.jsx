@@ -4,8 +4,10 @@ import './modern-styles.css';
 import './mobile-enhancements.css';
 import './modern-components.css';
 import './professional-ui.css';
-import { Calculator, Package, DollarSign, Building2, Settings, Database, Smartphone, Monitor, Search } from 'lucide-react';
+import './styles/simple-advanced.css';
+import { Calculator, DollarSign, Building2, Settings, Database, Smartphone, Monitor, Search } from 'lucide-react';
 import DeliveryForm from './components/DeliveryForm';
+
 // import ProductManager from './components/ProductManagerFirebase';
 // import YalidinePricing from './components/YalidinePricing';
 // import YalidineOffices from './components/YalidineOffices';
@@ -88,6 +90,8 @@ function App() {
 
 
 
+
+
             {/* Administration cachée mais accessible via Ctrl+Shift+A */}
             {showAdmin && (
               <button
@@ -137,6 +141,7 @@ function App() {
         <div className="tab-content">
           {activeTab === 'calculator' && <DeliveryForm />}
           {activeTab === 'prices' && <DeliveryPricesSearch />}
+
           {activeTab === 'admin' && <AdminDashboard />}
           {activeTab === 'diagnostic' && <YalidineDiagnostic />}
         </div>

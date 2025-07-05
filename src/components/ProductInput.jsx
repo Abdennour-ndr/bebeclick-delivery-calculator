@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import productsGoogleSheetsService from '../services/productsGoogleSheetsService';
 import firebaseService from '../services/firebaseService';
 import { Search, Package } from 'lucide-react';
 
@@ -37,24 +36,13 @@ function ProductInput({ value, onChange, onProductSelect, placeholder, disabled 
       try {
         let results = [];
 
-        // Essayer Firebase d'abord
-        try {
-          console.log('🔥 Recherche dans Firebase...');
-          const firebaseResults = await firebaseService.searchProducts(inputValue, 8);
-          if (firebaseResults.length > 0) {
-            results = firebaseResults;
-            console.log(`✅ ${results.length} produits trouvés dans Firebase`);
-            console.log('🔍 Structure du premier produit:', JSON.stringify(results[0], null, 2));
-          } else {
-            throw new Error('Aucun produit trouvé dans Firebase');
-          }
-        } catch (firebaseError) {
-          console.warn('⚠️ Firebase indisponible, fallback vers Google Sheets:', firebaseError.message);
-
-          // Fallback vers Google Sheets
-          console.log('📊 Recherche dans Google Sheets...');
-          results = await productsGoogleSheetsService.searchProducts(inputValue);
-          console.log(`✅ ${results.length} produits trouvés dans Google Sheets`);
+        // Recherche dans Firebase uniquement
+        console.log('🔥 Recherche dans Firebase...');
+        const firebaseResults = await firebaseService.searchProducts(inputValue, 8);
+        results = firebaseResults;
+        console.log(`✅ ${results.length} produits trouvés dans Firebase`);
+        if (results.length > 0) {
+          console.log('🔍 Structure du premier produit:', JSON.stringify(results[0], null, 2));
         }
 
         setSuggestions(results.slice(0, 8)); // Limiter à 8 résultats pour l'affichage

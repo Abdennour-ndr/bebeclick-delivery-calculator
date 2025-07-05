@@ -282,44 +282,60 @@ class FirebaseService {
   async searchProducts(searchTerm = '', limitCount = 20) {
     try {
       console.log(`🔍 البحث في المنتجات: "${searchTerm}"`);
-      
-      let q;
-      if (searchTerm) {
-        // بحث بسيط (Firebase لا يدعم full-text search مباشرة)
-        q = query(
-          collection(db, this.collections.products),
-          where('status', '!=', 'deleted'),
-          limit(limitCount)
-        );
-      } else {
-        q = query(
-          collection(db, this.collections.products),
-          where('status', '!=', 'deleted'),
-          orderBy('name', 'asc'),
-          limit(limitCount)
-        );
-      }
-      
+
+      // جلب جميع المنتجات أولاً (بدون فلتر status)
+      const q = query(
+        collection(db, this.collections.products),
+        limit(limitCount * 2) // جلب عدد أكبر للفلترة المحلية
+      );
+
       const querySnapshot = await getDocs(q);
       const products = [];
-      
+
       querySnapshot.forEach((doc) => {
         const data = doc.data();
+
+        // تجاهل المنتجات المحذوفة إذا كان لديها status
+        if (data.status === 'deleted') {
+          return;
+        }
+
         // فلترة محلية للبحث
-        if (!searchTerm || 
+        if (!searchTerm ||
             data.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             data.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            data.brand?.toLowerCase().includes(searchTerm.toLowerCase())) {
+            data.brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            data.category?.toLowerCase().includes(searchTerm.toLowerCase())) {
           products.push({
             id: doc.id,
             ...data
           });
         }
       });
-      
-      console.log(`✅ تم العثور على ${products.length} منتج`);
-      return products;
-      
+
+      // ترتيب النتائج حسب الصلة
+      const sortedProducts = products.sort((a, b) => {
+        if (!searchTerm) return 0;
+
+        const aName = a.name?.toLowerCase() || '';
+        const bName = b.name?.toLowerCase() || '';
+        const searchLower = searchTerm.toLowerCase();
+
+        // إعطاء أولوية للمطابقة في بداية الاسم
+        const aStartsWith = aName.startsWith(searchLower);
+        const bStartsWith = bName.startsWith(searchLower);
+
+        if (aStartsWith && !bStartsWith) return -1;
+        if (!aStartsWith && bStartsWith) return 1;
+
+        return aName.localeCompare(bName);
+      });
+
+      const finalResults = sortedProducts.slice(0, limitCount);
+      console.log(`✅ تم العثور على ${finalResults.length} منتج من أصل ${querySnapshot.size}`);
+
+      return finalResults;
+
     } catch (error) {
       console.error('❌ خطأ في البحث عن المنتجات:', error);
       throw error;
@@ -333,18 +349,21 @@ class FirebaseService {
 
       const q = query(
         collection(db, this.collections.products),
-        where('status', '!=', 'deleted'),
-        orderBy('name', 'asc')
+        orderBy('createdAt', 'desc')
       );
 
       const querySnapshot = await getDocs(q);
       const products = [];
 
       querySnapshot.forEach((doc) => {
-        products.push({
-          id: doc.id,
-          ...doc.data()
-        });
+        const data = doc.data();
+        // تجاهل المنتجات المحذوفة إذا كان لديها status
+        if (data.status !== 'deleted') {
+          products.push({
+            id: doc.id,
+            ...data
+          });
+        }
       });
 
       console.log(`✅ تم جلب ${products.length} منتج من Firebase`);
@@ -727,6 +746,94 @@ class FirebaseService {
 
     } catch (error) {
       console.error('❌ خطأ في تحديث السعر:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * إدارة المنتجات
+   */
+
+  // إضافة منتج جديد
+  async addProduct(productData) {
+    try {
+      console.log('➕ إضافة منتج جديد:', productData.name);
+
+      const docRef = await addDoc(collection(db, this.collections.products), {
+        ...productData,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+
+      console.log('✅ تم إضافة المنتج بنجاح:', docRef.id);
+      return docRef.id;
+
+    } catch (error) {
+      console.error('❌ خطأ في إضافة المنتج:', error);
+      throw error;
+    }
+  }
+
+  // تحديث منتج
+  async updateProduct(productId, productData) {
+    try {
+      console.log('✏️ تحديث المنتج:', productId);
+
+      const productRef = doc(db, this.collections.products, productId);
+      await updateDoc(productRef, {
+        ...productData,
+        updatedAt: serverTimestamp()
+      });
+
+      console.log('✅ تم تحديث المنتج بنجاح');
+
+    } catch (error) {
+      console.error('❌ خطأ في تحديث المنتج:', error);
+      throw error;
+    }
+  }
+
+  // حذف منتج
+  async deleteProduct(productId) {
+    try {
+      console.log('🗑️ حذف المنتج:', productId);
+
+      const productRef = doc(db, this.collections.products, productId);
+      await deleteDoc(productRef);
+
+      console.log('✅ تم حذف المنتج بنجاح');
+
+    } catch (error) {
+      console.error('❌ خطأ في حذف المنتج:', error);
+      throw error;
+    }
+  }
+
+  // البحث عن منتج بـ SKU
+  async getProductBySku(sku) {
+    try {
+      console.log('🔍 البحث عن منتج بـ SKU:', sku);
+
+      const q = query(
+        collection(db, this.collections.products),
+        where('sku', '==', sku),
+        limit(1)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        return null;
+      }
+
+      const doc = querySnapshot.docs[0];
+      return {
+        id: doc.id,
+        ...doc.data()
+      };
+
+    } catch (error) {
+      console.error('❌ خطأ في البحث عن المنتج:', error);
       throw error;
     }
   }

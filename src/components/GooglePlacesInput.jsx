@@ -173,18 +173,13 @@ const GooglePlacesInput = ({
   };
 
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
-      <div style={{ position: 'relative' }}>
-        <Search 
-          size={16} 
-          style={{ 
-            position: 'absolute', 
-            left: '12px', 
-            top: '50%', 
-            transform: 'translateY(-50%)', 
-            color: '#6b7280',
-            zIndex: 1
-          }} 
+    <div className="relative w-full">
+      <div className="relative group">
+        <Search
+          size={16}
+          className={`absolute left-3 top-1/2 transform -translate-y-1/2 z-10 transition-colors duration-200 ${
+            selectedPlace ? 'text-blue-500' : 'text-gray-400 group-focus-within:text-blue-500'
+          }`}
         />
         <input
           ref={inputRef}
@@ -192,40 +187,35 @@ const GooglePlacesInput = ({
           value={value}
           onChange={handleInputChange}
           placeholder={disabled ? placeholder : `${placeholder} (Google Maps)`}
-          className={className}
+          className={`
+            w-full pl-10 pr-12 py-3 text-sm border-2 rounded-xl transition-all duration-300
+            focus:outline-none focus:ring-0 bg-gray-50 focus:bg-white
+            ${disabled
+              ? 'bg-gray-100 border-gray-200 cursor-not-allowed'
+              : selectedPlace
+                ? 'border-green-500 bg-green-50 focus:border-green-600'
+                : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
+            }
+            ${className}
+          `}
           disabled={disabled}
-          style={{
-            ...style,
-            paddingLeft: disabled ? style.paddingLeft || '12px' : '40px',
-            backgroundColor: disabled ? '#f9fafb' : '#ffffff',
-            borderColor: disabled ? '#e5e7eb' : (selectedPlace ? '#10b981' : '#d1d5db')
-          }}
+          style={style}
         />
-        
+
         {selectedPlace && !disabled && (
-          selectedPlace.isEstablishment ? (
-            <Store
-              size={16}
-              style={{
-                position: 'absolute',
-                right: '12px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: '#f59e0b'
-              }}
-            />
-          ) : (
-            <MapPin
-              size={16}
-              style={{
-                position: 'absolute',
-                right: '12px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: '#10b981'
-              }}
-            />
-          )
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+            {selectedPlace.isEstablishment ? (
+              <Store
+                size={16}
+                className="text-yellow-500 animate-pulse"
+              />
+            ) : (
+              <MapPin
+                size={16}
+                className="text-green-500 animate-pulse"
+              />
+            )}
+          </div>
         )}
       </div>
 
