@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import firebaseService from '../services/firebaseService';
-import { Search, Package } from 'lucide-react';
+import { Search, Package, Camera } from 'lucide-react';
+import BarcodeScanner from './BarcodeScanner';
 
 function ProductInput({ value, onChange, onProductSelect, placeholder, disabled = false }) {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const inputRef = useRef(null);
   const suggestionsRef = useRef(null);
 
@@ -82,6 +84,52 @@ function ProductInput({ value, onChange, onProductSelect, placeholder, disabled 
     }
   };
 
+  const handleBarcodeClick = () => {
+    setShowBarcodeScanner(true);
+  };
+
+  const handleBarcodeSuccess = async (scannedCode) => {
+    console.log('🔍 Recherche du code-barres:', scannedCode);
+    setShowBarcodeScanner(false);
+
+    // Recherche dans la base de données avec le code-barres
+    try {
+      setLoading(true);
+      const results = await firebaseService.searchProducts(scannedCode, 8);
+
+      if (results.length > 0) {
+        // إذا وُجد منتج واحد فقط، اختره مباشرة
+        if (results.length === 1) {
+          const product = results[0];
+          onChange(product.name);
+          if (onProductSelect) {
+            onProductSelect(product);
+          }
+        } else {
+          // إذا وُجدت عدة منتجات، اعرضها في الاقتراحات
+          onChange(scannedCode);
+          setSuggestions(results);
+          setShowSuggestions(true);
+        }
+      } else {
+        // Si aucun produit trouvé, mettre le code-barres dans le champ de recherche
+        onChange(scannedCode);
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    } catch (error) {
+      console.error('❌ Erreur de recherche du code-barres:', error);
+      onChange(scannedCode);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBarcodeError = (error) => {
+    console.error('❌ Erreur de lecture du code-barres:', error);
+    setShowBarcodeScanner(false);
+  };
+
   return (
     <div className="product-input-container" style={{ fontSize: '18px' }}>
       <div className="product-search-wrapper">
@@ -99,6 +147,15 @@ function ProductInput({ value, onChange, onProductSelect, placeholder, disabled 
             autoComplete="off"
             style={{ fontSize: '17px' }}
           />
+          <button
+            type="button"
+            onClick={handleBarcodeClick}
+            className="product-barcode-btn"
+            title="Scanner un code-barres"
+            disabled={disabled}
+          >
+            <Camera size={20} />
+          </button>
           {loading && (
             <div className="product-loading-indicator">
               <Package size={18} className="product-spinner" />
@@ -144,6 +201,14 @@ function ProductInput({ value, onChange, onProductSelect, placeholder, disabled 
           ))}
         </div>
       )}
+
+      {/* Barcode Scanner */}
+      <BarcodeScanner
+        isOpen={showBarcodeScanner}
+        onClose={() => setShowBarcodeScanner(false)}
+        onScanSuccess={handleBarcodeSuccess}
+        onError={handleBarcodeError}
+      />
     </div>
   );
 }
