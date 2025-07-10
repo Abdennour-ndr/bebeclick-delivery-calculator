@@ -58,7 +58,7 @@ const GooglePlacesInput = ({
     const script = document.createElement('script');
     console.log('🔑 API Key utilisée:', apiKey ? `${apiKey.substring(0, 10)}...` : 'UNDEFINED');
 
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr&callback=initGoogleMaps`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr&loading=async&callback=initGoogleMaps`;
     script.async = true;
     script.onerror = () => {
       console.error('❌ Erreur lors du chargement de Google Maps API');
@@ -165,20 +165,22 @@ const GooglePlacesInput = ({
 
   const handleInputChange = (e) => {
     const newValue = e.target.value;
-    onChange(newValue);
-    
+    if (onChange) {
+      onChange(newValue);
+    }
+
     if (selectedPlace && newValue !== selectedPlace.formatted_address) {
       setSelectedPlace(null);
     }
   };
 
   return (
-    <div className="relative w-full">
-      <div className="relative group">
+    <div className="relative w-full bg-white">
+      <div className="relative group bg-white">
         <Search
           size={16}
           className={`absolute left-3 top-1/2 transform -translate-y-1/2 z-10 transition-colors duration-200 ${
-            selectedPlace ? 'text-blue-500' : 'text-gray-400 group-focus-within:text-blue-500'
+            selectedPlace ? 'text-blue-500' : 'text-gray-500 group-focus-within:text-blue-500'
           }`}
         />
         <input
@@ -189,17 +191,21 @@ const GooglePlacesInput = ({
           placeholder={disabled ? placeholder : `${placeholder} (Google Maps)`}
           className={`
             w-full pl-10 pr-12 py-3 text-sm border-2 rounded-xl transition-all duration-300
-            focus:outline-none focus:ring-0 bg-gray-50 focus:bg-white
+            focus:outline-none focus:ring-0 bg-white focus:bg-white text-gray-900
             ${disabled
-              ? 'bg-gray-100 border-gray-200 cursor-not-allowed'
+              ? 'bg-gray-100 border-gray-200 cursor-not-allowed text-gray-500'
               : selectedPlace
-                ? 'border-green-500 bg-green-50 focus:border-green-600'
-                : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
+                ? 'border-green-500 bg-green-50 focus:border-green-600 text-gray-900'
+                : 'border-gray-200 focus:border-blue-500 hover:border-gray-300 text-gray-900'
             }
             ${className}
           `}
           disabled={disabled}
-          style={style}
+          style={{
+            ...style,
+            backgroundColor: 'white',
+            color: '#111827'
+          }}
         />
 
         {selectedPlace && !disabled && (

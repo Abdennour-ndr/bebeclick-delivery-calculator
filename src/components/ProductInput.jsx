@@ -145,7 +145,7 @@ function ProductInput({ value, onChange, onProductSelect, placeholder, disabled 
             disabled={disabled}
             className="form-control product-input"
             autoComplete="off"
-            style={{ fontSize: '17px' }}
+            style={{ fontSize: '17px', border: '2px solid rgb(229, 231, 235)', backgroundColor: '#ffffff !important', color: '#000000 !important' }}
           />
           <button
             type="button"

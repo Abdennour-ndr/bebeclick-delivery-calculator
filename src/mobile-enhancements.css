@@ -178,22 +178,22 @@
   }
 }
 
-/* تحسينات للوضع المظلم */
+/* تحسينات للوضع المظلم - معطل لضمان الخلفية البيضاء */
 @media (prefers-color-scheme: dark) {
   .form-control {
-    background: #2d3748;
-    border-color: #4a5568;
-    color: white;
+    background: #ffffff !important;
+    border-color: rgb(229, 231, 235) !important;
+    color: #000000 !important;
   }
 
   .delivery-form {
-    background: #1a202c;
-    color: white;
+    background: #ffffff !important;
+    color: #000000 !important;
   }
 
   .result-display {
-    background: #2d3748;
-    color: white;
+    background: #ffffff !important;
+    color: #000000 !important;
   }
 }
 

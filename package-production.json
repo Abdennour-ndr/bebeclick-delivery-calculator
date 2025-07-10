@@ -1,0 +1,23 @@
+{
+  "name": "bebeclick-delivery-calculator",
+  "version": "1.0.0",
+  "description": "BebeClick Delivery Cost Calculator",
+  "main": "production-server.js",
+  "scripts": {
+    "start": "node production-server.js",
+    "build": "echo 'Build completed'",
+    "postinstall": "echo 'Dependencies installed'"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["delivery", "calculator", "bebeclick", "algeria"],
+  "author": "BebeClick",
+  "license": "MIT"
+}

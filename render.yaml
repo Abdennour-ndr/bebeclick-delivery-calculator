@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: bebeclick-delivery-calculator
+    env: node
+    plan: free
+    buildCommand: npm install --production
+    startCommand: node production-server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000

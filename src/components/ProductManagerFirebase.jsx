@@ -211,12 +211,12 @@ const ProductManager = () => {
   }, [products]);
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
+    <div className="max-w-7xl mx-auto p-6 space-y-6 bg-white min-h-screen">
       {/* Messages d'état */}
       {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="flex items-center justify-between">
+        <Alert variant="destructive" className="bg-red-50 border-red-200">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="flex items-center justify-between text-red-800">
             <span>🔥 Firebase: {error}</span>
             <Button variant="ghost" size="sm" onClick={() => setError(null)}>
               <X className="h-4 w-4" />
@@ -238,9 +238,9 @@ const ProductManager = () => {
       )}
 
       {!isOnline && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
+        <Alert variant="destructive" className="bg-red-50 border-red-200">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-800">
             ⚠️ Hors ligne - Firebase non disponible
           </AlertDescription>
         </Alert>

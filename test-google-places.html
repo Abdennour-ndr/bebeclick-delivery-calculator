@@ -102,7 +102,7 @@
                 };
 
                 const script = document.createElement('script');
-                script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places&language=fr&callback=initGoogleMapsTest`;
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places&language=fr&loading=async&callback=initGoogleMapsTest`;
                 script.async = true;
 
                 script.onerror = () => {

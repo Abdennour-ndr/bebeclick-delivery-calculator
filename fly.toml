@@ -8,6 +8,9 @@ primary_region = 'cdg'
 
 [build]
 
+[build.env]
+  VITE_GOOGLE_MAPS_API_KEY = 'AIzaSyD5T2bD2sqxQ90y4pJc8WEWyihlAJiYZKA'
+
 [env]
   NODE_ENV = 'production'
 

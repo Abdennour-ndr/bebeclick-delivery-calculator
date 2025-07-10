@@ -930,7 +930,7 @@ function DeliveryForm() {
                     onChange={(e) => setDimensions({ ...dimensions, length: e.target.value })}
                     className="form-control compact"
                     placeholder="0"
-                    style={{ backgroundColor: 'white', color: 'black', textAlign: 'center' }}
+                    style={{ backgroundColor: 'white', color: 'black', textAlign: 'center', border: '2px solid rgb(229, 231, 235)' }}
                   />
                 </div>
                 <div className="form-group compact">
@@ -942,7 +942,7 @@ function DeliveryForm() {
                     onChange={(e) => setDimensions({ ...dimensions, width: e.target.value })}
                     className="form-control compact"
                     placeholder="0"
-                    style={{ backgroundColor: 'white', color: 'black', textAlign: 'center' }}
+                    style={{ backgroundColor: 'white', color: 'black', textAlign: 'center', border: '2px solid rgb(229, 231, 235)' }}
                   />
                 </div>
                 <div className="form-group compact">
@@ -954,7 +954,7 @@ function DeliveryForm() {
                     onChange={(e) => setDimensions({ ...dimensions, height: e.target.value })}
                     className="form-control compact"
                     placeholder="0"
-                    style={{ backgroundColor: 'white', color: 'black', textAlign: 'center' }}
+                    style={{ backgroundColor: 'white', color: 'black', textAlign: 'center', border: '2px solid rgb(229, 231, 235)' }}
                   />
                 </div>
                 <div className="form-group compact">
@@ -967,7 +967,7 @@ function DeliveryForm() {
                     className="form-control compact"
                     placeholder="0"
                     step="0.1"
-                    style={{ backgroundColor: 'white', color: 'black', textAlign: 'center' }}
+                    style={{ backgroundColor: 'white', color: 'black', textAlign: 'center', border: '2px solid rgb(229, 231, 235)' }}
                   />
                 </div>
               </div>
@@ -1051,7 +1051,7 @@ function DeliveryForm() {
                   onChange={(e) => setDeclaredValue(e.target.value)}
                   className="form-control"
                   placeholder="Prix du colis à livrer"
-                  style={{ backgroundColor: 'white', color: 'black', textAlign: 'center' }}
+                  style={{ backgroundColor: 'white', color: 'black', textAlign: 'center', border: '2px solid rgb(229, 231, 235)' }}
                 />
                 <small className="form-help">Prix du colis que le client doit payer (optionnel)</small>
               </div>

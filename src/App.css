@@ -15,12 +15,13 @@
 
 /* Header */
 .App-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   padding: 2rem 1.5rem;
   text-align: center;
   position: relative;
   overflow: hidden;
   border-radius: 0 0 20px 20px;
+  border-bottom: 1px solid #e2e8f0;
   margin-bottom: 2rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
@@ -31,10 +32,7 @@
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.01em;
-  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #1a202c;
   position: relative;
   z-index: 1;
 }
