@@ -99,7 +99,6 @@ function YalidineWilayaCommuneSelector({ value, onChange }) {
   useEffect(() => {
     loadWilayas();
     const interval = setInterval(() => {
-      console.log('🔄 Rechargement automatique des wilayas...');
       loadWilayas();
     }, 5 * 60 * 1000);
     return () => clearInterval(interval);
@@ -138,7 +137,11 @@ function YalidineWilayaCommuneSelector({ value, onChange }) {
           yalidine: selectedCommune.pricing || {},
           source: 'firebase'
         },
-        zone: selectedWilaya.zone !== undefined ? selectedWilaya.zone : (selectedWilaya.deliveryConfig?.pricingZone !== undefined ? selectedWilaya.deliveryConfig.pricingZone : 1)
+        zone: selectedCommune.zone !== undefined
+          ? selectedCommune.zone
+          : (selectedWilaya.zone !== undefined
+            ? selectedWilaya.zone
+            : (selectedWilaya.deliveryConfig?.pricingZone ?? 1))
       };
       onChange(fullDestinationInfo);
     } else {
@@ -180,7 +183,8 @@ function YalidineWilayaCommuneSelector({ value, onChange }) {
         delivery_time: 48,
         pricing: commune.pricing,
         is_deliverable: true,
-        wilayaCode
+        wilayaCode,
+        zone: commune.zone // ✅ أضف zone هنا
       }));
       setCommunes(communeOptions);
       setSelectedCommune(null);
@@ -204,6 +208,11 @@ function YalidineWilayaCommuneSelector({ value, onChange }) {
     setSelectedCommune(selectedOption);
   }, []);
 
+  const stopLoading = useCallback(() => {
+    loadingRef.current = false;
+    setLoadingCommunes(false);
+  }, []);
+
   return (
     <div className="destination-selector">
       {/* UI rendering here... */}
@@ -212,4 +221,3 @@ function YalidineWilayaCommuneSelector({ value, onChange }) {
 }
 
 export default YalidineWilayaCommuneSelector;
-
